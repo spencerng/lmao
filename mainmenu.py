@@ -1,0 +1,112 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'mainmenu.ui'
+#
+# Created by: PyQt5 UI code generator 5.11.3
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_MainMenu(object):
+    def setupUi(self, MainMenu):
+        MainMenu.setObjectName("MainMenu")
+        MainMenu.resize(800, 480)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(MainMenu.sizePolicy().hasHeightForWidth())
+        MainMenu.setSizePolicy(sizePolicy)
+        MainMenu.setMinimumSize(QtCore.QSize(800, 480))
+        MainMenu.setMaximumSize(QtCore.QSize(800, 512))
+        MainMenu.setBaseSize(QtCore.QSize(800, 480))
+        self.mainMenuWidget = QtWidgets.QWidget(MainMenu)
+        self.mainMenuWidget.setMinimumSize(QtCore.QSize(320, 480))
+        self.mainMenuWidget.setMaximumSize(QtCore.QSize(800, 480))
+        self.mainMenuWidget.setBaseSize(QtCore.QSize(320, 480))
+        self.mainMenuWidget.setObjectName("mainMenuWidget")
+        self.scanItemFrame = QtWidgets.QFrame(self.mainMenuWidget)
+        self.scanItemFrame.setGeometry(QtCore.QRect(80, 10, 231, 211))
+        self.scanItemFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.scanItemFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.scanItemFrame.setObjectName("scanItemFrame")
+        self.scanItemIcon = QtWidgets.QGraphicsView(self.scanItemFrame)
+        self.scanItemIcon.setGeometry(QtCore.QRect(35, 11, 171, 131))
+        self.scanItemIcon.setObjectName("scanItemIcon")
+        self.scanItemLabel = QtWidgets.QLabel(self.scanItemFrame)
+        self.scanItemLabel.setGeometry(QtCore.QRect(70, 160, 111, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.scanItemLabel.setFont(font)
+        self.scanItemLabel.setObjectName("scanItemLabel")
+        self.washClothesFrame = QtWidgets.QFrame(self.mainMenuWidget)
+        self.washClothesFrame.setGeometry(QtCore.QRect(430, 10, 231, 211))
+        self.washClothesFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.washClothesFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.washClothesFrame.setObjectName("washClothesFrame")
+        self.washClothesIcon = QtWidgets.QGraphicsView(self.washClothesFrame)
+        self.washClothesIcon.setGeometry(QtCore.QRect(35, 11, 171, 131))
+        self.washClothesIcon.setObjectName("washClothesIcon")
+        self.washClothesLabel = QtWidgets.QLabel(self.washClothesFrame)
+        self.washClothesLabel.setGeometry(QtCore.QRect(50, 160, 131, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.washClothesLabel.setFont(font)
+        self.washClothesLabel.setObjectName("washClothesLabel")
+        self.viewEditItemFrame = QtWidgets.QFrame(self.mainMenuWidget)
+        self.viewEditItemFrame.setGeometry(QtCore.QRect(80, 240, 231, 211))
+        self.viewEditItemFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.viewEditItemFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.viewEditItemFrame.setObjectName("viewEditItemFrame")
+        self.viewEditItemIcon = QtWidgets.QGraphicsView(self.viewEditItemFrame)
+        self.viewEditItemIcon.setGeometry(QtCore.QRect(35, 11, 171, 131))
+        self.viewEditItemIcon.setObjectName("viewEditItemIcon")
+        self.viewEditItemLabel = QtWidgets.QLabel(self.viewEditItemFrame)
+        self.viewEditItemLabel.setGeometry(QtCore.QRect(40, 160, 141, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.viewEditItemLabel.setFont(font)
+        self.viewEditItemLabel.setObjectName("viewEditItemLabel")
+        self.settingsFrame = QtWidgets.QFrame(self.mainMenuWidget)
+        self.settingsFrame.setGeometry(QtCore.QRect(430, 240, 231, 211))
+        self.settingsFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.settingsFrame.setFrameShadow(QtWidgets.QFrame.Raised)
+        self.settingsFrame.setObjectName("settingsFrame")
+        self.settingsIcon = QtWidgets.QGraphicsView(self.settingsFrame)
+        self.settingsIcon.setGeometry(QtCore.QRect(35, 11, 171, 131))
+        self.settingsIcon.setObjectName("settingsIcon")
+        self.settingsLabel = QtWidgets.QLabel(self.settingsFrame)
+        self.settingsLabel.setGeometry(QtCore.QRect(70, 160, 111, 31))
+        font = QtGui.QFont()
+        font.setPointSize(14)
+        self.settingsLabel.setFont(font)
+        self.settingsLabel.setObjectName("settingsLabel")
+        MainMenu.setCentralWidget(self.mainMenuWidget)
+        self.mainToolBar = QtWidgets.QToolBar(MainMenu)
+        self.mainToolBar.setObjectName("mainToolBar")
+        MainMenu.addToolBar(QtCore.Qt.TopToolBarArea, self.mainToolBar)
+        self.statusBar = QtWidgets.QStatusBar(MainMenu)
+        self.statusBar.setObjectName("statusBar")
+        MainMenu.setStatusBar(self.statusBar)
+
+        self.retranslateUi(MainMenu)
+        QtCore.QMetaObject.connectSlotsByName(MainMenu)
+
+    def retranslateUi(self, MainMenu):
+        _translate = QtCore.QCoreApplication.translate
+        MainMenu.setWindowTitle(_translate("MainMenu", "Laundry Manager and Optimizer"))
+        self.scanItemLabel.setText(_translate("MainMenu", "Scan Item"))
+        self.washClothesLabel.setText(_translate("MainMenu", "Wash Clothes"))
+        self.viewEditItemLabel.setText(_translate("MainMenu", "View/Edit Items"))
+        self.settingsLabel.setText(_translate("MainMenu", "Settings"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainMenu = QtWidgets.QMainWindow()
+    ui = Ui_MainMenu()
+    ui.setupUi(MainMenu)
+    MainMenu.show()
+    sys.exit(app.exec_())
+
