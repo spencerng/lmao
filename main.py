@@ -57,7 +57,6 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 		scene = QGraphicsScene()
 		img = QPixmap(os.getcwd() + '/img/barcode-scan.png')
 		scene.addPixmap(img)
-		scene.addText('Hello  world')
 		self.scanItemIcon.setScene(scene)
 		self.scanItemIcon.show()
 		#self.scanItemFrame.connect(lambda: self.onScanItemFrameClick())
