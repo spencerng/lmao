@@ -111,6 +111,19 @@
      <pixmap>img/icon_home.png</pixmap>
     </property>
    </widget>
+   <widget class="QLabel" name="cameraFeedLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>521</width>
+      <height>411</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="enabled">

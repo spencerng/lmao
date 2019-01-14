@@ -6,52 +6,21 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QObject, pyqtSignal
 from PyQt5.QtGui import QPixmap
 
+import io
+import time
+import picamera
+import cv2
+import numpy as np
+
 
 import mainmenu
 import scanmenu
 
-def clickable(widget):
- 
-	class Filter(QObject):
-     
-		clicked = pyqtSignal()
-	 
-	def eventFilter(self, obj, event):
-	 
-		if obj == widget:
-			if event.type() == QEvent.MouseButtonRelease:
-				if obj.rect().contains(event.pos()):
-					self.clicked.emit()
-					return True
-	     
-		return False
-     
-	filter = Filter(widget)
-	widget.installEventFilter(filter)
-	return filter.clicked
 
-# create class for our Raspberry Pi GUI
 class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
-	def pressedPreviewButton(self):
-		print("Pressed Preview!")
-		myPixmap = QPixmap()
-		myScaledPixmap = myPixmap.scaled(self.lblCamView.size(), Qt.KeepAspectRatio)
-		self.lblCamView.setPixmap(myScaledPixmap)
-
-	def pressedSnapButton(self):
-		print("Pressed Snap")
-		self.lblCamView.clear()
-
-	def pressedSettingsButton(self):
-		print("Settings pressed")
-
-	def onScanItemFrameClick(self, mouseEvent):
-		self.stackedWidget.setCurrentIndex(1)
-		
-
 	def __init__(self):
 		super(self.__class__, self).__init__()
-		self.setupUi(self) # gets defined in the UI file
+		self.setupUi(self)
 
 		self.stackedWidget = QStackedWidget()
 		self.stackedWidget.addWidget(self)
@@ -60,6 +29,23 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 		self.stackedWidget.show()
 		
 		self.scanItemFrame.mouseReleaseEvent = self.onScanItemFrameClick
+		self.settingsFrame.mouseReleaseEvent = self.onSettingsFrameClick
+		self.viewEditItemFrame.mouseReleaseEvent = self.onViewEditItemFrameClick
+		self.washClothesFrame.mouseReleaseEvent = self.onWashClothesFrameClick
+		
+
+	def onSettingsFrameClick(self, mouseEvent):
+		print("Settings pressed")
+
+	def onViewEditItemFrameClick(self, mouseEvent):
+		print('view edit pressed')
+
+	def onWashClothesFrameClick(self, mouseEvent):
+		print('wash clothes clicked')
+
+	def onScanItemFrameClick(self, mouseEvent):
+		self.stackedWidget.setCurrentIndex(1)
+		
 
 class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 	def __init__(self, stackedWidget):
@@ -68,8 +54,40 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 		self.stackedWidget = stackedWidget
 		self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
 
+		#this stream code is untested!!
+		camFeed = CameraStream(self, self.cameraFeedLabel)
+		camFeed.currentPixmap.connect(self.setPreview)
+		camFeed.start()
+
 	def onHomeButtonClick(self, mouseEvent):
 		self.stackedWidget.setCurrentIndex(0)
+
+	def setPreview(self, image):
+		self.cameraFeedLabel.setPixmap(QPixmap.fromImage(image))
+		
+
+class CameraStream(QThread, previewLabel):
+	currentPixmap = pyqtSignal(QImage)
+
+	def run(self):
+		stream = io.BytesIO()
+		with picamera.PiCamera() as camera:
+		    camera.start_preview()
+		    time.sleep(2)
+		    camera.capture(stream, format='jpeg')
+		
+		while True:
+			data = np.fromstring(stream.getvalue(), dtype=np.uint8)
+			# "Decode" the image from the array, preserving colour
+			image = cv2.imdecode(data, 1)
+			# OpenCV returns an array with data in BGR order. If you want RGB instead
+			# use the following...
+			image = image[:, :, ::-1]
+
+			qtImage = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
+
+			scaledImage = qtImage.scaled(previewLabel.size(), Qt.KeepAspectRatio)
+			self.currentPixmap.emit(scaledImage)
 
 
 if __name__ == '__main__':
@@ -77,4 +95,4 @@ if __name__ == '__main__':
 	form = MainWindow()
 	form.show()
 	
-	sys.exit(app.exec_()) # need this to keep window alive
+	sys.exit(app.exec_())
