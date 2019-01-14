@@ -54,12 +54,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 
 
 		self.scanItemFrame.mousePressEvent = self.onScanItemFrameClick()
-		scene = QGraphicsScene()
-		img = QPixmap(os.getcwd() + '/img/barcode-scan.png')
-		scene.addPixmap(img)
-		self.scanItemIcon.setScene(scene)
-		self.scanItemIcon.show()
-		#self.scanItemFrame.connect(lambda: self.onScanItemFrameClick())
+		
 
 
 

@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>800</width>
-    <height>480</height>
+    <height>492</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+   <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -25,7 +25,7 @@
   <property name="maximumSize">
    <size>
     <width>800</width>
-    <height>512</height>
+    <height>492</height>
    </size>
   </property>
   <property name="baseSize">
@@ -38,6 +38,12 @@
    <string>Laundry Manager and Optimizer</string>
   </property>
   <widget class="QWidget" name="mainMenuWidget">
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
    <property name="minimumSize">
     <size>
      <width>320</width>
@@ -59,8 +65,8 @@
    <widget class="QFrame" name="scanItemFrame">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>10</y>
+      <x>110</x>
+      <y>50</y>
       <width>231</width>
       <height>211</height>
      </rect>
@@ -71,28 +77,12 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QGraphicsView" name="scanItemIcon">
-     <property name="geometry">
-      <rect>
-       <x>35</x>
-       <y>11</y>
-       <width>171</width>
-       <height>131</height>
-      </rect>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
     <widget class="QLabel" name="scanItemLabel">
      <property name="geometry">
       <rect>
-       <x>70</x>
-       <y>160</y>
-       <width>111</width>
+       <x>0</x>
+       <y>170</y>
+       <width>231</width>
        <height>31</height>
       </rect>
      </property>
@@ -104,13 +94,35 @@
      <property name="text">
       <string>Scan Item</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="scanItemIcon">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>10</y>
+       <width>181</width>
+       <height>151</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>img/icon_scan.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
     </widget>
    </widget>
    <widget class="QFrame" name="washClothesFrame">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>10</y>
+      <x>460</x>
+      <y>50</y>
       <width>231</width>
       <height>211</height>
      </rect>
@@ -121,22 +133,12 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QGraphicsView" name="washClothesIcon">
-     <property name="geometry">
-      <rect>
-       <x>35</x>
-       <y>11</y>
-       <width>171</width>
-       <height>131</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QLabel" name="washClothesLabel">
      <property name="geometry">
       <rect>
-       <x>50</x>
-       <y>160</y>
-       <width>131</width>
+       <x>0</x>
+       <y>180</y>
+       <width>231</width>
        <height>31</height>
       </rect>
      </property>
@@ -148,13 +150,41 @@
      <property name="text">
       <string>Wash Clothes</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="washClothesIcon">
+     <property name="geometry">
+      <rect>
+       <x>60</x>
+       <y>10</y>
+       <width>120</width>
+       <height>151</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>img/icon_wash.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
     </widget>
    </widget>
    <widget class="QFrame" name="viewEditItemFrame">
     <property name="geometry">
      <rect>
-      <x>80</x>
-      <y>240</y>
+      <x>110</x>
+      <y>280</y>
       <width>231</width>
       <height>211</height>
      </rect>
@@ -165,22 +195,12 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QGraphicsView" name="viewEditItemIcon">
-     <property name="geometry">
-      <rect>
-       <x>35</x>
-       <y>11</y>
-       <width>171</width>
-       <height>131</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QLabel" name="viewEditItemLabel">
      <property name="geometry">
       <rect>
-       <x>40</x>
+       <x>0</x>
        <y>160</y>
-       <width>141</width>
+       <width>231</width>
        <height>31</height>
       </rect>
      </property>
@@ -192,13 +212,35 @@
      <property name="text">
       <string>View/Edit Items</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+    <widget class="QLabel" name="viewEditItemIcon">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>0</y>
+       <width>150</width>
+       <height>150</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>img/icon_viewedit.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
     </widget>
    </widget>
    <widget class="QFrame" name="settingsFrame">
     <property name="geometry">
      <rect>
-      <x>430</x>
-      <y>240</y>
+      <x>460</x>
+      <y>280</y>
       <width>231</width>
       <height>211</height>
      </rect>
@@ -209,22 +251,12 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QGraphicsView" name="settingsIcon">
-     <property name="geometry">
-      <rect>
-       <x>35</x>
-       <y>11</y>
-       <width>171</width>
-       <height>131</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QLabel" name="settingsLabel">
      <property name="geometry">
       <rect>
-       <x>70</x>
+       <x>0</x>
        <y>160</y>
-       <width>111</width>
+       <width>231</width>
        <height>31</height>
       </rect>
      </property>
@@ -236,10 +268,62 @@
      <property name="text">
       <string>Settings</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
     </widget>
+    <widget class="QLabel" name="settingsIcon">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>0</y>
+       <width>145</width>
+       <height>150</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>img/icon_settings.png</pixmap>
+     </property>
+     <property name="scaledContents">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLabel" name="appTitleLabel">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>10</y>
+      <width>371</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>14</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Laundry Manager and Optimizer</string>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
+    </property>
    </widget>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -247,7 +331,6 @@
     <bool>false</bool>
    </attribute>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
