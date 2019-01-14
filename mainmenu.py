@@ -32,6 +32,8 @@ class Ui_MainMenu(object):
         self.mainMenuWidget.setObjectName("mainMenuWidget")
         self.scanItemFrame = QtWidgets.QFrame(self.mainMenuWidget)
         self.scanItemFrame.setGeometry(QtCore.QRect(110, 50, 231, 211))
+        self.scanItemFrame.setMouseTracking(True)
+        self.scanItemFrame.setAutoFillBackground(True)
         self.scanItemFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.scanItemFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.scanItemFrame.setObjectName("scanItemFrame")

@@ -8,6 +8,7 @@ from PyQt5.QtGui import QPixmap
 
 
 import mainmenu
+import scanmenu
 
 def clickable(widget):
  
@@ -44,20 +45,21 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 	def pressedSettingsButton(self):
 		print("Settings pressed")
 
-	def onScanItemFrameClick(self):
-		print('frame clicked')
+	def onScanItemFrameClick(self, mouseEvent):
+		self.scanSubmenu.show()
+		self.hide()
 
 
 	def __init__(self):
 		super(self.__class__, self).__init__()
 		self.setupUi(self) # gets defined in the UI file
+		self.scanSubmenu = ScanMenu()
+		self.scanItemFrame.mouseReleaseEvent = self.onScanItemFrameClick
 
-
-		self.scanItemFrame.mousePressEvent = self.onScanItemFrameClick()
-		
-
-
-
+class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
+	def __init__(self):
+		super(self.__class__, self).__init__()
+		self.setupUi(self)
 
 
 if __name__ == '__main__':
