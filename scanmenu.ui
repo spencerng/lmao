@@ -60,7 +60,7 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>50</y>
+      <y>38</y>
       <width>201</width>
       <height>61</height>
      </rect>
@@ -73,7 +73,7 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>140</y>
+      <y>128</y>
       <width>201</width>
       <height>51</height>
      </rect>
@@ -86,7 +86,7 @@
     <property name="geometry">
      <rect>
       <x>570</x>
-      <y>220</y>
+      <y>208</y>
       <width>201</width>
       <height>51</height>
      </rect>
@@ -95,18 +95,33 @@
      <string>Other Item - Dark</string>
     </property>
    </widget>
-   <widget class="QGraphicsView" name="homeBtn">
+   <widget class="QLabel" name="homeButton">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>310</y>
-      <width>121</width>
-      <height>111</height>
+      <x>570</x>
+      <y>290</y>
+      <width>181</width>
+      <height>151</height>
      </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap>img/icon_home.png</pixmap>
     </property>
    </widget>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -114,7 +129,6 @@
     <bool>false</bool>
    </attribute>
   </widget>
-  <widget class="QStatusBar" name="statusBar"/>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>

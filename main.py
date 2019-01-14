@@ -46,20 +46,30 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 		print("Settings pressed")
 
 	def onScanItemFrameClick(self, mouseEvent):
-		self.scanSubmenu.show()
-		self.hide()
-
+		self.stackedWidget.setCurrentIndex(1)
+		
 
 	def __init__(self):
 		super(self.__class__, self).__init__()
 		self.setupUi(self) # gets defined in the UI file
-		self.scanSubmenu = ScanMenu()
+
+		self.stackedWidget = QStackedWidget()
+		self.stackedWidget.addWidget(self)
+		self.stackedWidget.addWidget(ScanMenu(self.stackedWidget))
+		self.stackedWidget.setCurrentIndex(0)
+		self.stackedWidget.show()
+		
 		self.scanItemFrame.mouseReleaseEvent = self.onScanItemFrameClick
 
 class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
-	def __init__(self):
+	def __init__(self, stackedWidget):
 		super(self.__class__, self).__init__()
 		self.setupUi(self)
+		self.stackedWidget = stackedWidget
+		self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
+
+	def onHomeButtonClick(self, mouseEvent):
+		self.stackedWidget.setCurrentIndex(0)
 
 
 if __name__ == '__main__':
