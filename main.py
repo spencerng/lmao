@@ -3,18 +3,24 @@ from os import sys
 
 import PyQt5
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt, QObject, pyqtSignal
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtCore import Qt, QObject, pyqtSignal, QThread
+from PyQt5.QtGui import QPixmap, QImage
 
 import io
 import time
-import picamera
 import cv2
 import numpy as np
 
-
 import mainmenu
 import scanmenu
+
+PICAM_INSTALLED = True
+
+try:
+	import picamera
+except ModuleNotFoundError as e:
+	PICAM_INSTALLED = False
+
 
 
 class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
@@ -54,10 +60,11 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 		self.stackedWidget = stackedWidget
 		self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
 
-		#this stream code is untested!!
-		camFeed = CameraStream(self, self.cameraFeedLabel)
-		camFeed.currentPixmap.connect(self.setPreview)
-		camFeed.start()
+		if PICAM_INSTALLED:
+			#this stream code is untested!!
+			self.camFeed = CameraStream(self, self.cameraFeedLabel)
+			self.camFeed.currentPixmap.connect(self.setPreview)
+			self.camFeed.start()
 
 	def onHomeButtonClick(self, mouseEvent):
 		self.stackedWidget.setCurrentIndex(0)
@@ -66,8 +73,12 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 		self.cameraFeedLabel.setPixmap(QPixmap.fromImage(image))
 		
 
-class CameraStream(QThread, previewLabel):
+class CameraStream(QThread):
 	currentPixmap = pyqtSignal(QImage)
+
+	def __init__(self, parent, previewLabel):
+		super(self.__class__, self).__init__()
+		self.previewLabel = previewLabel
 
 	def run(self):
 		stream = io.BytesIO()
@@ -86,7 +97,7 @@ class CameraStream(QThread, previewLabel):
 
 			qtImage = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
 
-			scaledImage = qtImage.scaled(previewLabel.size(), Qt.KeepAspectRatio)
+			scaledImage = qtImage.scaled(self.previewLabel.size(), Qt.KeepAspectRatio)
 			self.currentPixmap.emit(scaledImage)
 
 
