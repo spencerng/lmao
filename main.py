@@ -62,6 +62,8 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 		self.stackedWidget = stackedWidget
 		self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
 		self.scanItemBtn.mouseReleaseEvent = self.onScanItemButtonClick
+		self.otherItemLightBtn.mouseReleaseEvent = self.onOtherItemLightButtonClick
+		self.otherItemDarkBtn.mouseReleaseEvent = self.onOtherItemDarkButtonClick
 
 		if PICAM_INSTALLED:
 			#this stream code is untested!!
@@ -69,10 +71,19 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 			self.camFeed.currentPixmap.connect(self.setPreview)
 			self.camFeed.start()
 
+	def onOtherItemButtonDarkClick(self, mouseEvent):
+		self.switchToConfirmScreen(['OTHER_DARK'])
+
+	def onOtherItemLightButtonClick(self, mouseEvent):
+		self.switchToConfirmScreen(['OTHER_LIGHT'])
+
 	def onScanItemButtonClick(self, mouseEvent):
 		currentImage = self.cameraFeedLabel.pixmap()
 		currentRecognizedSymbols = self.getLaundrySymbolsFromImage(currentImage)
-		self.stackedWidget.widget(2).setLaundrySymbols(currentRecognizedSymbols)
+		self.switchToConfirmScreen(laundrySymbols)
+
+	def switchToConfirmScreen(self, laundrySymbols):
+		self.stackedWidget.widget(2).setLaundrySymbols(laundrySymbols)
 		self.stackedWidget.setCurrentIndex(2)
 
 	def getLaundrySymbolsFromImage(self, cvImage):
