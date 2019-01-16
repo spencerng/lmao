@@ -13,6 +13,7 @@ import numpy as np
 
 import mainmenu
 import scanmenu
+import confirmmenu
 
 PICAM_INSTALLED = True
 
@@ -31,6 +32,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 		self.stackedWidget = QStackedWidget()
 		self.stackedWidget.addWidget(self)
 		self.stackedWidget.addWidget(ScanMenu(self.stackedWidget))
+		self.stackedWidget.addWidget(ConfirmScreen(self.stackedWidget))
 		self.stackedWidget.setCurrentIndex(0)
 		self.stackedWidget.show()
 		
@@ -59,6 +61,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 		self.setupUi(self)
 		self.stackedWidget = stackedWidget
 		self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
+		self.scanItemBtn.mouseReleaseEvent = self.onScanItemButtonClick
 
 		if PICAM_INSTALLED:
 			#this stream code is untested!!
@@ -66,12 +69,37 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 			self.camFeed.currentPixmap.connect(self.setPreview)
 			self.camFeed.start()
 
+	def onScanItemButtonClick(self, mouseEvent):
+		currentImage = self.cameraFeedLabel.pixmap()
+		currentRecognizedSymbols = self.getLaundrySymbolsFromImage(currentImage)
+		self.stackedWidget.widget(2).setLaundrySymbols(currentRecognizedSymbols)
+		self.stackedWidget.setCurrentIndex(2)
+
+	def getLaundrySymbolsFromImage(self, cvImage):
+		#TODO write this
+		return []
+
 	def onHomeButtonClick(self, mouseEvent):
 		self.stackedWidget.setCurrentIndex(0)
 
 	def setPreview(self, image):
 		self.cameraFeedLabel.setPixmap(QPixmap.fromImage(image))
-		
+
+class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
+	def __init__(self, stackedWidget):
+		super(self.__class__, self).__init__()
+		self.setupUi(self)
+		self.stackedWidget = stackedWidget
+
+	def setLaundrySymbols(self, laundrySymbols):
+		#TODO write this
+		self.autoSetHamperSection()
+		pass
+
+	def autoSetHamperSection(self):
+		#TODO write this
+		pass
+
 
 class CameraStream(QThread):
 	currentPixmap = pyqtSignal(QImage)
@@ -88,6 +116,7 @@ class CameraStream(QThread):
 		    camera.capture(stream, format='jpeg')
 		
 		while True:
+			time.sleep(1000/30.0)
 			data = np.fromstring(stream.getvalue(), dtype=np.uint8)
 			# "Decode" the image from the array, preserving colour
 			image = cv2.imdecode(data, 1)
