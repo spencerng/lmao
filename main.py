@@ -5,6 +5,7 @@ import PyQt5
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QObject, pyqtSignal, QThread
 from PyQt5.QtGui import QPixmap, QImage
+from enum import Enum
 
 import io
 import time
@@ -22,6 +23,23 @@ try:
 except ModuleNotFoundError as e:
 	PICAM_INSTALLED = False
 
+UI_INDEX={'MAIN_WINDOW': 0,'SCAN_MENU': 1,'CONFIRM_SCREEN': 2,
+	'SETTINGS_MENU': 3,'WASH_ITEMS_MENU': 4,'VIEW_EDIT_MENU': 5}
+
+class LaundrySymbols(Enum):
+	OTHER_DARK = 0
+	OTHER_LIGHT = 1
+	BLEACH_NO = 2
+	BLEACH_NOCL = 3
+	TUMBLEDRY_H = 4
+	TUMBLEDRY_L = 5
+	IRON_H = 6
+	IRON_L = 7
+	IRON_M = 8
+	TUMBLEDRY_OK = 9
+	WASH_30 = 10
+	WASH_40 = 11
+	WASH_50 = 12
 
 
 class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
@@ -33,7 +51,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 		self.stackedWidget.addWidget(self)
 		self.stackedWidget.addWidget(ScanMenu(self.stackedWidget))
 		self.stackedWidget.addWidget(ConfirmScreen(self.stackedWidget))
-		self.stackedWidget.setCurrentIndex(0)
+		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_WINDOW'])
 		self.stackedWidget.show()
 		
 		self.scanItemFrame.mouseReleaseEvent = self.onScanItemFrameClick
@@ -52,7 +70,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 		print('wash clothes clicked')
 
 	def onScanItemFrameClick(self, mouseEvent):
-		self.stackedWidget.setCurrentIndex(1)
+		self.stackedWidget.setCurrentIndex(UI_INDEX['SCAN_MENU'])
 		
 
 class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
@@ -71,11 +89,11 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 			self.camFeed.currentPixmap.connect(self.setPreview)
 			self.camFeed.start()
 
-	def onOtherItemButtonDarkClick(self, mouseEvent):
-		self.switchToConfirmScreen(['OTHER_DARK'])
+	def onOtherItemDarkButtonClick(self, mouseEvent):
+		self.switchToConfirmScreen([LaundrySymbols.OTHER_DARK])
 
 	def onOtherItemLightButtonClick(self, mouseEvent):
-		self.switchToConfirmScreen(['OTHER_LIGHT'])
+		self.switchToConfirmScreen([LaundrySymbols.OTHER_LIGHT])
 
 	def onScanItemButtonClick(self, mouseEvent):
 		currentImage = self.cameraFeedLabel.pixmap()
@@ -84,14 +102,14 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 
 	def switchToConfirmScreen(self, laundrySymbols):
 		self.stackedWidget.widget(2).setLaundrySymbols(laundrySymbols)
-		self.stackedWidget.setCurrentIndex(2)
+		self.stackedWidget.setCurrentIndex(UI_INDEX['CONFIRM_SCREEN'])
 
 	def getLaundrySymbolsFromImage(self, cvImage):
 		#TODO write this
 		return []
 
 	def onHomeButtonClick(self, mouseEvent):
-		self.stackedWidget.setCurrentIndex(0)
+		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_WINDOW'])
 
 	def setPreview(self, image):
 		self.cameraFeedLabel.setPixmap(QPixmap.fromImage(image))
