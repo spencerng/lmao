@@ -23,7 +23,7 @@ try:
 except ModuleNotFoundError as e:
 	PICAM_INSTALLED = False
 
-UI_INDEX={'MAIN_WINDOW': 0,'SCAN_MENU': 1,'CONFIRM_SCREEN': 2,
+UI_INDEX={'MAIN_MENU': 0,'SCAN_MENU': 1,'CONFIRM_SCREEN': 2,
 	'SETTINGS_MENU': 3,'WASH_ITEMS_MENU': 4,'VIEW_EDIT_MENU': 5}
 
 class LaundrySymbols(Enum):
@@ -51,7 +51,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 		self.stackedWidget.addWidget(self)
 		self.stackedWidget.addWidget(ScanMenu(self.stackedWidget))
 		self.stackedWidget.addWidget(ConfirmScreen(self.stackedWidget))
-		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_WINDOW'])
+		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 		self.stackedWidget.show()
 		
 		self.scanItemFrame.mouseReleaseEvent = self.onScanItemFrameClick
@@ -98,7 +98,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 	def onScanItemButtonClick(self, mouseEvent):
 		currentImage = self.cameraFeedLabel.pixmap()
 		currentRecognizedSymbols = self.getLaundrySymbolsFromImage(currentImage)
-		self.switchToConfirmScreen(laundrySymbols)
+		self.switchToConfirmScreen(currentRecognizedSymbols)
 
 	def switchToConfirmScreen(self, laundrySymbols):
 		self.stackedWidget.widget(2).setLaundrySymbols(laundrySymbols)
@@ -109,7 +109,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 		return []
 
 	def onHomeButtonClick(self, mouseEvent):
-		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_WINDOW'])
+		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 
 	def setPreview(self, image):
 		self.cameraFeedLabel.setPixmap(QPixmap.fromImage(image))
@@ -119,14 +119,37 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 		super(self.__class__, self).__init__()
 		self.setupUi(self)
 		self.stackedWidget = stackedWidget
+		self.confirmScanBtn.mouseReleaseEvent = self.onConfirmButtonClick
+		self.retryScanBtn.mouseReleaseEvent = self.onRetryButtonClick
+
+	def onRetryButtonClick(self, mouseEvent):
+		self.stackedWidget.setCurrentIndex(UI_INDEX['SCAN_MENU'])
+
+	def onConfirmButtonClick(self, mouseEvent):
+		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 
 	def setLaundrySymbols(self, laundrySymbols):
 		#TODO write this
+		self.laundrySymbols = laundrySymbols
+		if len(laundrySymbols) == 0:
+			return
+		if laundrySymbols[0] == LaundrySymbols.OTHER_LIGHT:
+			#change label to light item
+			pass
+
+		elif laundrySymbols[0] == LaundrySymbols.OTHER_DARK:
+			#change label to dark item
+			pass
+
+		else:
+			#add icons to below label
+			pass
+
 		self.autoSetHamperSection()
-		pass
 
 	def autoSetHamperSection(self):
 		#TODO write this
+		#based on algorithm, set images
 		pass
 
 
