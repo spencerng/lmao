@@ -3,7 +3,7 @@ from os import sys
 
 import PyQt5
 from PyQt5.QtWidgets import *
-from PyQt5.QtCore import Qt, QObject, pyqtSignal, QThread
+from PyQt5.QtCore import Qt, QObject, pyqtSignal, QThread, QPoint
 from PyQt5.QtGui import QPixmap, QImage
 from enum import Enum
 
@@ -106,7 +106,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 
 	def getLaundrySymbolsFromImage(self, cvImage):
 		#TODO write this
-		return []
+		return [LaundrySymbols.WASH_30, LaundrySymbols.WASH_30,LaundrySymbols.WASH_30,LaundrySymbols.WASH_30]
 
 	def onHomeButtonClick(self, mouseEvent):
 		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
@@ -134,23 +134,31 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 		if len(laundrySymbols) == 0:
 			return
 		if laundrySymbols[0] == LaundrySymbols.OTHER_LIGHT:
-			#change label to light item
-			pass
+			self.itemDetectedLabel.text = 'Other item - light'
 
 		elif laundrySymbols[0] == LaundrySymbols.OTHER_DARK:
-			#change label to dark item
-			pass
+			self.itemDetectedLabel.text = 'Other item - dark'
 
 		else:
-			#add icons to below label
-			pass
+			for i in range(len(laundrySymbols)):
+				symbolHolder = QLabel(self.detectedSymbolFrame)
+
+				totalWidth = 100 * len(laundrySymbols) - 20 * (len(laundrySymbols) - 1)
+
+				symbolHolder.move(QPoint(-totalWidth/2+120*i, -40) + self.detectedSymbolFrame.rect().center())
+				
+				symbolHolder.setFixedWidth(100)			
+				symbolGraphic = QPixmap('./img/wash_30c.png')
+				symbolHolder.setPixmap(symbolGraphic.scaled(100,80,Qt.KeepAspectRatio))
 
 		self.autoSetHamperSection()
 
 	def autoSetHamperSection(self):
-		#TODO write this
+		#TODO finish writing this
 		#based on algorithm, set images
-		pass
+		sectionGraphic = QPixmap('./img/place_tr.png')
+
+		self.hamperSectionView.setPixmap(sectionGraphic)
 
 
 class CameraStream(QThread):
