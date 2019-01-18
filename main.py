@@ -11,17 +11,19 @@ import io
 import time
 import cv2
 import numpy as np
+import rpi_backlight as backlight
 
 import mainmenu
 import scanmenu
 import confirmmenu
+import settingsmenu
 
-PICAM_INSTALLED = True
+PI_ACTIVE = True
 
 try:
 	import picamera
 except ModuleNotFoundError as e:
-	PICAM_INSTALLED = False
+	PI_ACTIVE = False
 
 UI_INDEX={'MAIN_MENU': 0,'SCAN_MENU': 1,'CONFIRM_SCREEN': 2,
 	'SETTINGS_MENU': 3,'WASH_ITEMS_MENU': 4,'VIEW_EDIT_MENU': 5}
@@ -51,6 +53,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 		self.stackedWidget.addWidget(self)
 		self.stackedWidget.addWidget(ScanMenu(self.stackedWidget))
 		self.stackedWidget.addWidget(ConfirmScreen(self.stackedWidget))
+		self.stackedWidget.addWidget(SettingsMenu(self.stackedWidget))
 		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 		self.stackedWidget.show()
 		
@@ -61,7 +64,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 		
 
 	def onSettingsFrameClick(self, mouseEvent):
-		print("Settings pressed")
+		self.stackedWidget.setCurrentIndex(UI_INDEX['SETTINGS_MENU'])
 
 	def onViewEditItemFrameClick(self, mouseEvent):
 		print('view edit pressed')
@@ -71,7 +74,26 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 
 	def onScanItemFrameClick(self, mouseEvent):
 		self.stackedWidget.setCurrentIndex(UI_INDEX['SCAN_MENU'])
-		
+
+class SettingsMenu(QMainWindow, settingsmenu.Ui_SettingsMenu):
+	def __init__(self, stackedWidget):
+		super(self.__class__, self).__init__()
+		self.setupUi(self)
+		self.stackedWidget = stackedWidget
+		self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
+		self.brightnessSlider.mouseReleaseEvent = self.onBrightnessSliderChange
+		if PI_ACTIVE:
+			self.brightnessSlider.setValue(backlight.get_actual_brightness())
+
+	def onBrightnessSliderChange(self, mouseEvent):
+		brightness = int(100*self.brightnessSlider.value() / 255)
+		self.brightnessLvlLabel.setText('Current level: ' + str(brightness))
+		if PI_ACTIVE:
+			backlight.set_brightness(self.brightnessSlider.value(), smooth=True, duration=1.5)
+
+	def onHomeButtonClick(self, mouseEvent):
+		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
+
 
 class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 	def __init__(self, stackedWidget):
@@ -83,7 +105,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 		self.otherItemLightBtn.mouseReleaseEvent = self.onOtherItemLightButtonClick
 		self.otherItemDarkBtn.mouseReleaseEvent = self.onOtherItemDarkButtonClick
 
-		if PICAM_INSTALLED:
+		if PI_ACTIVE:
 			#this stream code is untested!!
 			self.camFeed = CameraStream(self, self.cameraFeedLabel)
 			self.camFeed.currentPixmap.connect(self.setPreview)
@@ -106,13 +128,18 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 
 	def getLaundrySymbolsFromImage(self, cvImage):
 		#TODO write this
-		return [LaundrySymbols.WASH_30, LaundrySymbols.WASH_30,LaundrySymbols.WASH_30,LaundrySymbols.WASH_30]
+		symbols = []
+		for i in range(2):
+			symbols.append(LaundrySymbols.WASH_30)
+		return symbols
 
 	def onHomeButtonClick(self, mouseEvent):
 		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 
 	def setPreview(self, image):
 		self.cameraFeedLabel.setPixmap(QPixmap.fromImage(image))
+
+
 
 class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 	def __init__(self, stackedWidget):
@@ -134,10 +161,10 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 		if len(laundrySymbols) == 0:
 			return
 		if laundrySymbols[0] == LaundrySymbols.OTHER_LIGHT:
-			self.itemDetectedLabel.text = 'Other item - light'
+			self.itemDetectedLabel.setText('Other item - light')
 
 		elif laundrySymbols[0] == LaundrySymbols.OTHER_DARK:
-			self.itemDetectedLabel.text = 'Other item - dark'
+			self.itemDetectedLabel.setText('Other item - dark')
 
 		else:
 			for i in range(len(laundrySymbols)):
@@ -145,7 +172,7 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 
 				totalWidth = 100 * len(laundrySymbols) - 20 * (len(laundrySymbols) - 1)
 
-				symbolHolder.move(QPoint(-totalWidth/2+120*i, -40) + self.detectedSymbolFrame.rect().center())
+				symbolHolder.move(QPoint(-totalWidth/2+100*i-5*(len(laundrySymbols)-1), -40) + self.detectedSymbolFrame.rect().center())
 				
 				symbolHolder.setFixedWidth(100)			
 				symbolGraphic = QPixmap('./img/wash_30c.png')
