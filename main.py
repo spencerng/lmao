@@ -104,12 +104,14 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 		self.scanItemBtn.mouseReleaseEvent = self.onScanItemButtonClick
 		self.otherItemLightBtn.mouseReleaseEvent = self.onOtherItemLightButtonClick
 		self.otherItemDarkBtn.mouseReleaseEvent = self.onOtherItemDarkButtonClick
+		self.stackedWidget.currentChanged = self.onMenuChange	
 
-		if PI_ACTIVE:
-			#this stream code is untested!!
+	def onMenuChange(self, newIndex):
+		if newIndex == UI_INDEX['SCAN_MENU'] and PI_ACTIVE:
 			self.camFeed = CameraStream(self, self.cameraFeedLabel)
-			self.camFeed.currentPixmap.connect(self.setPreview)
 			self.camFeed.start()
+		elif self.camFeed is not None and PI_ACTIVE:
+			self.camFeed.quit()
 
 	def onOtherItemDarkButtonClick(self, mouseEvent):
 		self.switchToConfirmScreen([LaundrySymbols.OTHER_DARK])
@@ -123,11 +125,10 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 		self.switchToConfirmScreen(currentRecognizedSymbols)
 
 	def switchToConfirmScreen(self, laundrySymbols):
-		self.stackedWidget.widget(2).setLaundrySymbols(laundrySymbols)
+		self.stackedWidget.widget(UI_INDEX['CONFIRM_SCREEN']).setLaundrySymbols(laundrySymbols)
 		self.stackedWidget.setCurrentIndex(UI_INDEX['CONFIRM_SCREEN'])
 
-	def getLaundrySymbolsFromImage(self, cvImage):
-		#TODO write this
+	def getLaundrySymbolsFromImage(self, pixmapImage):
 		symbols = []
 		for i in range(2):
 			symbols.append(LaundrySymbols.WASH_30)
@@ -136,9 +137,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 	def onHomeButtonClick(self, mouseEvent):
 		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 
-	def setPreview(self, image):
-		self.cameraFeedLabel.setPixmap(QPixmap.fromImage(image))
-
+	
 
 
 class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
@@ -158,7 +157,12 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 	def setLaundrySymbols(self, laundrySymbols):
 		#TODO write this
 		self.laundrySymbols = laundrySymbols
+
+		for symbol in self.detectedSymbolFrame.findChildren(QLabel):
+			symbol.setParent(None)
+
 		if len(laundrySymbols) == 0:
+			self.itemDetectedLabel.setText('No symbols detected')
 			return
 		if laundrySymbols[0] == LaundrySymbols.OTHER_LIGHT:
 			self.itemDetectedLabel.setText('Other item - light')
@@ -167,6 +171,7 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 			self.itemDetectedLabel.setText('Other item - dark')
 
 		else:
+			self.itemDetectedLabel.setText('Symbols detected')
 			for i in range(len(laundrySymbols)):
 				symbolHolder = QLabel(self.detectedSymbolFrame)
 
@@ -199,7 +204,7 @@ class CameraStream(QThread):
 		stream = io.BytesIO()
 		with picamera.PiCamera() as camera:
 		    camera.start_preview()
-		    time.sleep(2)
+		    time.sleep(1000/30.0)
 		    camera.capture(stream, format='jpeg')
 		
 		while True:
@@ -214,7 +219,7 @@ class CameraStream(QThread):
 			qtImage = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
 
 			scaledImage = qtImage.scaled(self.previewLabel.size(), Qt.KeepAspectRatio)
-			self.currentPixmap.emit(scaledImage)
+			self.previewLabel.setPixmap(QPixmap.fromImage(scaledImage))
 
 
 if __name__ == '__main__':
