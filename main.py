@@ -29,19 +29,19 @@ UI_INDEX={'MAIN_MENU': 0,'SCAN_MENU': 1,'CONFIRM_SCREEN': 2,
 	'SETTINGS_MENU': 3,'WASH_ITEMS_MENU': 4,'VIEW_EDIT_MENU': 5}
 
 class LaundrySymbols(Enum):
-	OTHER_DARK = 0
-	OTHER_LIGHT = 1
-	BLEACH_NO = 2
-	BLEACH_NOCL = 3
-	TUMBLEDRY_H = 4
-	TUMBLEDRY_L = 5
-	IRON_H = 6
-	IRON_L = 7
-	IRON_M = 8
-	TUMBLEDRY_OK = 9
-	WASH_30 = 10
-	WASH_40 = 11
-	WASH_50 = 12
+	OTHER_DARK = None
+	OTHER_LIGHT = None
+	BLEACH_NO = './img/bleach_no.png'
+	BLEACH_NOCL = './img/bleach_nocl.png'
+	TUMBLEDRY_H = './img/tumbledry_high.png'
+	TUMBLEDRY_L = './img/tumbledry_low.png'
+	TUMBLEDRY_OK = './img/tumbledry_ok.png'
+	IRON_H = './img/iron_high.png'
+	IRON_L = './img/iron_low.png'
+	IRON_M = './img/iron_high.png'
+	WASH_30 = './img/wash_30c.png'
+	WASH_40 = './img/wash_40c.png'
+	WASH_50 = './img/wash_50c.png'
 
 
 class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
@@ -130,15 +130,19 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 
 	def getLaundrySymbolsFromImage(self, pixmapImage):
 		symbols = []
-		for i in range(2):
+		itemChoice  = False
+		if itemChoice:
 			symbols.append(LaundrySymbols.WASH_30)
+			symbols.append(LaundrySymbols.IRON_M)
+			symbols.append(LaundrySymbols.BLEACH_NO)
+		else:
+			symbols.append(LaundrySymbols.WASH_40)
+			symbols.append(LaundrySymbols.IRON_M)
+			symbols.append(LaundrySymbols.BLEACH_NOCL)
 		return symbols
 
 	def onHomeButtonClick(self, mouseEvent):
 		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
-
-	
-
 
 class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 	def __init__(self, stackedWidget):
@@ -155,7 +159,6 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 		self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 
 	def setLaundrySymbols(self, laundrySymbols):
-		#TODO write this
 		self.laundrySymbols = laundrySymbols
 
 		for symbol in self.detectedSymbolFrame.findChildren(QLabel):
@@ -179,8 +182,8 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 
 				symbolHolder.move(QPoint(-totalWidth/2+100*i-5*(len(laundrySymbols)-1), -40) + self.detectedSymbolFrame.rect().center())
 				
-				symbolHolder.setFixedWidth(100)			
-				symbolGraphic = QPixmap('./img/wash_30c.png')
+				symbolHolder.setFixedWidth(100)	
+				symbolGraphic = QPixmap(laundrySymbols[i].value)
 				symbolHolder.setPixmap(symbolGraphic.scaled(100,80,Qt.KeepAspectRatio))
 
 		self.autoSetHamperSection()
@@ -188,6 +191,8 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 	def autoSetHamperSection(self):
 		#TODO finish writing this
 		#based on algorithm, set images
+
+
 		sectionGraphic = QPixmap('./img/place_tr.png')
 
 		self.hamperSectionView.setPixmap(sectionGraphic)
