@@ -106,7 +106,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
     def onScanItemButtonClick(self, mouseEvent):
         lastImage = None
         if self.camFeed is not None and PI_ACTIVE:
-            lastImage = self.cameFeed.getCurrentImage()
+            lastImage = self.camFeed.getCurrentImage()
         currentRecognizedSymbols = self.getLaundrySymbolsFromImage(lastImage)
         self.switchToConfirmScreen(currentRecognizedSymbols)
 
@@ -138,17 +138,16 @@ class CameraStream(QThread):
         print('qthread created!')
 
     def getCurrentImage(self):
-        data = np.fromstring(stream.getvalue(), dtype=np.uint8)
+        data = np.fromstring(self.stream.getvalue(), dtype=np.uint8)
         # "Decode" the image from the array, preserving colour
         image = cv2.imdecode(data, 1)
         # OpenCV returns an array with data in BGR order. If you want RGB instead
         # use the following...
         image = image[:, :, ::-1]
             
-        #qtImage = qimage2ndarray.array2qimage(image)
-        #scaledImage = qtImage.scaled(self.previewLabel.size(), Qt.KeepAspectRatio)
-        #self.previewLabel.setPixmap(QPixmap.fromImage(scaledImage))
-        return image
+        qtImage = qimage2ndarray.array2qimage(image)
+
+        return QPixmap.fromImage(qtImage)
 
     def quit(self):
         super(self.__class__,self).quit()
@@ -157,10 +156,10 @@ class CameraStream(QThread):
 
     def run(self):
         print('qthread run!')
-        stream = io.BytesIO()
+        self.stream = io.BytesIO()
         self.camera = picamera.PiCamera()
+        self.camera.capture(self.stream, format='jpeg')
         self.camera.start_preview(fullscreen=False, window=(20,30,520,410))
-        self.camera.capture(stream, format='jpeg')
         
 
 class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
@@ -229,6 +228,8 @@ class SettingsMenu(QMainWindow, settingsmenu.Ui_SettingsMenu):
         self.brightnessSlider.mouseReleaseEvent = self.onBrightnessSliderChange
         if PI_ACTIVE:
             self.brightnessSlider.setValue(backlight.get_actual_brightness())
+            self.brightnessLvlLabel.setText('Current level: ' + str(int(backlight.get_actual_brightness()*100/255)))
+	
 
     def onBrightnessSliderChange(self, mouseEvent):
         brightness = int(100*self.brightnessSlider.value() / 255)
