@@ -115,8 +115,10 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['CONFIRM_SCREEN'])
 
     def getLaundrySymbolsFromImage(self, pixmapImage):
+        #TODO actually do this
         symbols = []
         itemChoice  = False
+        
         if itemChoice:
             symbols.append(LaundrySymbols.WASH_30)
             symbols.append(LaundrySymbols.IRON_M)
@@ -138,11 +140,11 @@ class CameraStream(QThread):
         print('qthread created!')
 
     def getCurrentImage(self):
+        #TODO fix this so we retrieve the latest image fron the stream, not the first one
         data = np.fromstring(self.stream.getvalue(), dtype=np.uint8)
         # "Decode" the image from the array, preserving colour
         image = cv2.imdecode(data, 1)
-        # OpenCV returns an array with data in BGR order. If you want RGB instead
-        # use the following...
+        # Change to RGB image
         image = image[:, :, ::-1]
             
         qtImage = qimage2ndarray.array2qimage(image)
@@ -178,7 +180,7 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 
     def setLaundrySymbols(self, laundrySymbols):
         self.laundrySymbols = laundrySymbols
-
+        self.autoSetHamperSection()
         for symbol in self.detectedSymbolFrame.findChildren(QLabel):
             symbol.setParent(None)
 
@@ -207,15 +209,23 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
                 symbolGraphic = QPixmap(laundrySymbols[i].value)
                 symbolHolder.setPixmap(symbolGraphic.scaled(100,80,Qt.KeepAspectRatio))
 
-        self.autoSetHamperSection()
+        
 
     def autoSetHamperSection(self):
-        #TODO finish writing this
-        #based on algorithm, set images
+        #TODO do something more adaptive here
+        sectionGraphic = QPixmap()
+        if LaundrySymbols.OTHER_DARK in self.laundrySymbols:
+            sectionGraphic = QPixmap('./img/place_tr.png')
 
+        elif LaundrySymbols.OTHER_LIGHT in self.laundrySymbols:
+            sectionGraphic = QPixmap('./img/place_tl.png')
 
-        sectionGraphic = QPixmap('./img/place_tr.png')
+        elif LaundrySymbols.WASH_30 in self.laundrySymbols:
+            sectionGraphic = QPixmap('./img/place_bl.png')
 
+        elif LaundrySymbols.WASH_40 in self.laundrySymbols:
+            sectionGraphic = QPixmap('./img/place_br.png')
+        
         self.hamperSectionView.setPixmap(sectionGraphic)
 
 
