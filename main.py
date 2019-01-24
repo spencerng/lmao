@@ -12,6 +12,7 @@ import time
 import cv2
 import numpy as np
 import rpi_backlight as backlight
+import qimage2ndarray
 
 import mainmenu
 import scanmenu
@@ -99,15 +100,17 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 	def __init__(self, stackedWidget):
 		super(self.__class__, self).__init__()
 		self.setupUi(self)
+		self.camFeed = None
 		self.stackedWidget = stackedWidget
 		self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
 		self.scanItemBtn.mouseReleaseEvent = self.onScanItemButtonClick
 		self.otherItemLightBtn.mouseReleaseEvent = self.onOtherItemLightButtonClick
 		self.otherItemDarkBtn.mouseReleaseEvent = self.onOtherItemDarkButtonClick
-		self.stackedWidget.currentChanged = self.onMenuChange	
+		self.stackedWidget.currentChanged.connect(self.onMenuChange)
 
 	def onMenuChange(self, newIndex):
 		if newIndex == UI_INDEX['SCAN_MENU'] and PI_ACTIVE:
+			print('going to create qthread!')
 			self.camFeed = CameraStream(self, self.cameraFeedLabel)
 			self.camFeed.start()
 		elif self.camFeed is not None and PI_ACTIVE:
@@ -199,32 +202,31 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 
 
 class CameraStream(QThread):
-	currentPixmap = pyqtSignal(QImage)
 
 	def __init__(self, parent, previewLabel):
 		super(self.__class__, self).__init__()
 		self.previewLabel = previewLabel
+		print('qthread created!')
 
 	def run(self):
+		print('qthread run!')
+		self.previewLabel.setPixmap(QPixmap('./img/wash_30c.png'))
 		stream = io.BytesIO()
 		with picamera.PiCamera() as camera:
-		    camera.start_preview()
-		    time.sleep(1000/30.0)
 		    camera.capture(stream, format='jpeg')
+		    print('camera started!')
 		
-		while True:
-			time.sleep(1000/30.0)
-			data = np.fromstring(stream.getvalue(), dtype=np.uint8)
-			# "Decode" the image from the array, preserving colour
-			image = cv2.imdecode(data, 1)
-			# OpenCV returns an array with data in BGR order. If you want RGB instead
+		    while True:
+		        data = np.fromstring(stream.getvalue(), dtype=np.uint8)
+		        # "Decode" the image from the array, preserving colour
+		        image = cv2.imdecode(data, 1)
+		        # OpenCV returns an array with data in BGR order. If you want RGB instead
 			# use the following...
-			image = image[:, :, ::-1]
-
-			qtImage = QImage(image.data, image.shape[1], image.shape[0], QImage.Format_RGB888)
-
-			scaledImage = qtImage.scaled(self.previewLabel.size(), Qt.KeepAspectRatio)
-			self.previewLabel.setPixmap(QPixmap.fromImage(scaledImage))
+		        image = image[:, :, ::-1]
+			
+		        qtImage = qimage2ndarray.array2qimage(image)
+		        scaledImage = qtImage.scaled(self.previewLabel.size(), Qt.KeepAspectRatio)
+		        self.previewLabel.setPixmap(QPixmap.fromImage(scaledImage))
 
 
 if __name__ == '__main__':
