@@ -160,7 +160,9 @@ class CameraStream(QThread):
         print('qthread created!')
 
     def getCurrentImage(self):                
-        return self.camera.capture(self.stream, format="bgr")
+        rawCapture = picamera.array.PiRGBArray(self.camera)
+        imcapture = self.camera.capture(rawCapture, format="bgr")
+        return imcapture.array
         '''
         #TODO fix this so we retrieve the latest image fron the stream, not the first one
         data = np.fromstring(self.stream.getvalue(), dtype=np.uint8)
@@ -181,7 +183,7 @@ class CameraStream(QThread):
 
     def run(self):
         print('qthread run!')
-        self.stream = io.BytesIO()
+        #self.stream = io.BytesIO()
         self.camera = picamera.PiCamera()
         #self.camera.capture(self.stream, format='bgr')
         self.camera.start_preview(fullscreen=False, window=(20,30,520,410))
