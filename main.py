@@ -121,7 +121,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
     def getLaundrySymbolsFromImage(self, pixmapImage):
         img1 = cv2.imread('template.jpg',0)          # queryImage - bleach nocl
         img2 = pixmapImage
-        img3 = cv2.imread('template2.png',0) #iron_medium
+        img3 = cv2.imread('template2.jpg',0) #iron_medium
         sift = cv2.xfeatures2d.SIFT_create()
         kp1, des1 = sift.detectAndCompute(img1,None)
         kp2, des2 = sift.detectAndCompute(img2,None)
