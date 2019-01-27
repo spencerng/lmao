@@ -132,7 +132,9 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
                 good.append([m])
         
         symbols = []
-        
+        print(len(good))        
+
+
         if(len(good) > 5):
             itemChoice  = True
         else:        
