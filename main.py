@@ -23,6 +23,7 @@ PI_ACTIVE = True
 
 try:
     import picamera
+    import picamera.array
     import rpi_backlight as backlight
 except ModuleNotFoundError as e:
     PI_ACTIVE = False
