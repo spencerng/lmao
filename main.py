@@ -6,6 +6,7 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QObject, pyqtSignal, QThread, QPoint
 from PyQt5.QtGui import QPixmap, QImage
 from enum import Enum
+from matplotlib import pyplot as plt
 
 import io
 import time
@@ -22,6 +23,7 @@ PI_ACTIVE = True
 
 try:
     import picamera
+    import picamera.array
     import rpi_backlight as backlight
 except ModuleNotFoundError as e:
     PI_ACTIVE = False
@@ -107,6 +109,8 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         lastImage = None
         if self.camFeed is not None and PI_ACTIVE:
             lastImage = self.camFeed.getCurrentImage()
+        
+        
         currentRecognizedSymbols = self.getLaundrySymbolsFromImage(lastImage)
         self.switchToConfirmScreen(currentRecognizedSymbols)
 
@@ -115,10 +119,25 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['CONFIRM_SCREEN'])
 
     def getLaundrySymbolsFromImage(self, pixmapImage):
-        #TODO actually do this
-        symbols = []
-        itemChoice  = False
+        img1 = cv2.imread('template.jpg',0)          # queryImage
+        img2 = pixmapImage
+        sift = cv2.xfeatures2d.SIFT_create()
+        kp1, des1 = sift.detectAndCompute(img1,None)
+        kp2, des2 = sift.detectAndCompute(img2,None)
+        bf = cv2.BFMatcher()
+        matches = bf.knnMatch(des1,des2, k=2)
+        good = []
+        for m,n in matches:
+            if m.distance < 0.75*n.distance:
+                good.append([m])
         
+        symbols = []
+        
+        if(len(good) > 5):
+            itemChoice  = True
+        else:        
+            itemChoice = False
+
         if itemChoice:
             symbols.append(LaundrySymbols.WASH_30)
             symbols.append(LaundrySymbols.IRON_M)
@@ -139,7 +158,9 @@ class CameraStream(QThread):
         self.previewLabel = previewLabel
         print('qthread created!')
 
-    def getCurrentImage(self):
+    def getCurrentImage(self):                
+        return self.camera.capture(self.stream, format="bgr")
+        '''
         #TODO fix this so we retrieve the latest image fron the stream, not the first one
         data = np.fromstring(self.stream.getvalue(), dtype=np.uint8)
         # "Decode" the image from the array, preserving colour
@@ -150,6 +171,7 @@ class CameraStream(QThread):
         qtImage = qimage2ndarray.array2qimage(image)
 
         return QPixmap.fromImage(qtImage)
+        '''
 
     def quit(self):
         super(self.__class__,self).quit()
@@ -160,7 +182,7 @@ class CameraStream(QThread):
         print('qthread run!')
         self.stream = io.BytesIO()
         self.camera = picamera.PiCamera()
-        self.camera.capture(self.stream, format='jpeg')
+        #self.camera.capture(self.stream, format='bgr')
         self.camera.start_preview(fullscreen=False, window=(20,30,520,410))
         
 
