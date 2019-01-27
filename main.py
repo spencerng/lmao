@@ -143,11 +143,13 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         print("nocl: " + str(len(flag_BLEACH_NOCL)))        
         print("ironm: " + str(len(flag_IRONM)))        
 
-        if (len(flag_BLEACH_NOCL) > 3):
-            symbols.append(LaundrySymbols.WASH_30)            
+        if (len(flag_IRONM) > 1):
+            symbols.append(LaundrySymbols.WASH_40)            
             symbols.append(LaundrySymbols.BLEACH_NOCL)
-        if(len(flag_IRONM) > 3):
             symbols.append(LaundrySymbols.IRON_M)
+        else if(len(flag_IRONM) > 3):
+            symbols.append(LaundrySymbols.WASH_30)            
+            symbols.append(LaundrySymbols.BLEACH_NOCL)            
         return symbols
 
     def onHomeButtonClick(self, mouseEvent):
