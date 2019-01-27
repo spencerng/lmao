@@ -147,7 +147,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
             symbols.append(LaundrySymbols.WASH_40)            
             symbols.append(LaundrySymbols.BLEACH_NOCL)
             symbols.append(LaundrySymbols.IRON_M)
-        else if(len(flag_IRONM) > 3):
+        elif(len(flag_IRONM) > 3):
             symbols.append(LaundrySymbols.WASH_30)            
             symbols.append(LaundrySymbols.BLEACH_NOCL)            
         return symbols
