@@ -158,8 +158,9 @@ class CameraStream(QThread):
         self.previewLabel = previewLabel
         print('qthread created!')
 
-    def getCurrentImage(self):
+    def getCurrentImage(self):        
         rawCapture = picamera.array.PiRGBArray(self.camera, size=(640,480))        
+        rawCapture.truncate(0)        
         frame = self.camera.capture(rawCapture, format="bgr")
         return frame.array
         '''
