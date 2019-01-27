@@ -158,10 +158,8 @@ class CameraStream(QThread):
         self.previewLabel = previewLabel
         print('qthread created!')
 
-    def getCurrentImage(self):        
-        rawCapture = picamera.array.PiRGBArray(self.camera, size=(640,480))        
-        rawCapture.truncate(0)        
-        frame = self.camera.capture(rawCapture, format="bgr")
+    def getCurrentImage(self):                
+        frame = self.camera.capture(self.stream, format="bgr")
         return frame.array
         '''
         #TODO fix this so we retrieve the latest image fron the stream, not the first one
