@@ -119,35 +119,35 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['CONFIRM_SCREEN'])
 
     def getLaundrySymbolsFromImage(self, pixmapImage):
-        img1 = cv2.imread('template.jpg',0)          # queryImage
+        img1 = cv2.imread('template.jpg',0)          # queryImage - bleach nocl
         img2 = pixmapImage
+        img3 = cv2.imread('template2.png',0) #iron_medium
         sift = cv2.xfeatures2d.SIFT_create()
         kp1, des1 = sift.detectAndCompute(img1,None)
         kp2, des2 = sift.detectAndCompute(img2,None)
+        kp3, des3 = sift.detectAndCompute(img3,None)
         bf = cv2.BFMatcher()
-        matches = bf.knnMatch(des1,des2, k=2)
-        good = []
-        for m,n in matches:
+        matches1 = bf.knnMatch(des1,des2, k=2)
+        matches2 = bf.knnMatch(des2,des3, k=2)
+        flag_BLEACH_NOCL = []
+        for m,n in matches1:
             if m.distance < 0.75*n.distance:
-                good.append([m])
+                flag_BLEACH_NOCL.append([m])
+
+        flag_IRONM = []
+        for m,n in matches2:
+            if m.distance < 0.75*n.distance:
+                flag_IRONM.append([m])
         
         symbols = []
-        print(len(good))        
+        print("nocl: " + str(len(flag_BLEACH_NOCL)))        
+        print("ironm: " + str(len(flag_IRONM)))        
 
-
-        if(len(good) > 5):
-            itemChoice  = True
-        else:        
-            itemChoice = False
-
-        if itemChoice:
-            symbols.append(LaundrySymbols.WASH_30)
-            symbols.append(LaundrySymbols.IRON_M)
-            symbols.append(LaundrySymbols.BLEACH_NO)
-        else:
-            symbols.append(LaundrySymbols.WASH_40)
-            symbols.append(LaundrySymbols.IRON_M)
+        if (len(flag_BLEACH_NOCL) > 3):
+            symbols.append(LaundrySymbols.WASH_30)            
             symbols.append(LaundrySymbols.BLEACH_NOCL)
+        if(len(flag_IRONM) > 3):
+            symbols.append(LaundrySymbols.IRON_M)
         return symbols
 
     def onHomeButtonClick(self, mouseEvent):
