@@ -47,7 +47,7 @@ class Ui_ScanMenu(object):
         self.otherItemDarkBtn.setFont(font)
         self.otherItemDarkBtn.setObjectName("otherItemDarkBtn")
         self.homeButton = QtWidgets.QLabel(self.centralWidget)
-        self.homeButton.setGeometry(QtCore.QRect(610, 300, 131, 131))
+        self.homeButton.setGeometry(QtCore.QRect(600, 320, 131, 131))
         self.homeButton.setText("")
         self.homeButton.setPixmap(QtGui.QPixmap("img/icon_home.png"))
         self.homeButton.setScaledContents(True)

@@ -116,8 +116,8 @@
    <widget class="QLabel" name="homeButton">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>300</y>
+      <x>600</x>
+      <y>320</y>
       <width>131</width>
       <height>131</height>
      </rect>
