@@ -27,7 +27,7 @@ class Ui_ConfirmMenu(object):
         self.confirmMenuWidget.setObjectName("confirmMenuWidget")
         self.detectedSymbolFrame = QtWidgets.QFrame(self.confirmMenuWidget)
         self.detectedSymbolFrame.setGeometry(QtCore.QRect(0, 60, 801, 80))
-        self.detectedSymbolFrame.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.detectedSymbolFrame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.detectedSymbolFrame.setFrameShadow(QtWidgets.QFrame.Raised)
         self.detectedSymbolFrame.setObjectName("detectedSymbolFrame")
         self.itemDetectedLabel = QtWidgets.QLabel(self.confirmMenuWidget)

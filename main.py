@@ -166,18 +166,8 @@ class CameraStream(QThread):
         rawCapture = picamera.array.PiRGBArray(self.camera)
         self.camera.capture(rawCapture, format="bgr")
         return rawCapture.array
-        '''
-        #TODO fix this so we retrieve the latest image fron the stream, not the first one
-        data = np.fromstring(self.stream.getvalue(), dtype=np.uint8)
-        # "Decode" the image from the array, preserving colour
-        image = cv2.imdecode(data, 1)
-        # Change to RGB image
-        image = image[:, :, ::-1]
-            
-        qtImage = qimage2ndarray.array2qimage(image)
 
-        return QPixmap.fromImage(qtImage)
-        '''
+       
 
     def quit(self):
         super(self.__class__,self).quit()
