@@ -184,7 +184,7 @@ class CameraStream(QThread):
         print('qthread run!')
         self.stream = io.BytesIO()
         self.camera = picamera.PiCamera()
-        self.camera.capture(self.stream, format='bgr')
+        #self.camera.capture(self.stream, format='bgr')
         self.camera.start_preview(fullscreen=False, window=(20,30,520,410))
         
 
