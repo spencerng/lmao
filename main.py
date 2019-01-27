@@ -119,33 +119,37 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['CONFIRM_SCREEN'])
 
     def getLaundrySymbolsFromImage(self, pixmapImage):
-        img1 = cv2.imread('template.jpg',0)          # queryImage
+        img1 = cv2.imread('template.jpg',0)          # queryImage - bleach nocl
         img2 = pixmapImage
+        img3 = cv2.imread('template2.jpg',0) #iron_medium
         sift = cv2.xfeatures2d.SIFT_create()
         kp1, des1 = sift.detectAndCompute(img1,None)
         kp2, des2 = sift.detectAndCompute(img2,None)
+        kp3, des3 = sift.detectAndCompute(img3,None)
         bf = cv2.BFMatcher()
-        matches = bf.knnMatch(des1,des2, k=2)
-        good = []
-        for m,n in matches:
+        matches1 = bf.knnMatch(des1,des2, k=2)
+        matches2 = bf.knnMatch(des2,des3, k=2)
+        flag_BLEACH_NOCL = []
+        for m,n in matches1:
             if m.distance < 0.75*n.distance:
-                good.append([m])
+                flag_BLEACH_NOCL.append([m])
+
+        flag_IRONM = []
+        for m,n in matches2:
+            if m.distance < 0.75*n.distance:
+                flag_IRONM.append([m])
         
         symbols = []
-        
-        if(len(good) > 5):
-            itemChoice  = True
-        else:        
-            itemChoice = False
+        print("nocl: " + str(len(flag_BLEACH_NOCL)))        
+        print("ironm: " + str(len(flag_IRONM)))        
 
-        if itemChoice:
-            symbols.append(LaundrySymbols.WASH_30)
-            symbols.append(LaundrySymbols.IRON_M)
-            symbols.append(LaundrySymbols.BLEACH_NO)
-        else:
-            symbols.append(LaundrySymbols.WASH_40)
-            symbols.append(LaundrySymbols.IRON_M)
+        if (len(flag_IRONM) > 6):
+            symbols.append(LaundrySymbols.WASH_40)            
             symbols.append(LaundrySymbols.BLEACH_NOCL)
+            symbols.append(LaundrySymbols.IRON_M)
+        elif(len(flag_BLEACH_NOCL) > 3 and len(flag_BLEACH_NOCL) < 18):
+            symbols.append(LaundrySymbols.WASH_30)            
+            symbols.append(LaundrySymbols.BLEACH_NOCL)            
         return symbols
 
     def onHomeButtonClick(self, mouseEvent):
@@ -159,19 +163,11 @@ class CameraStream(QThread):
         print('qthread created!')
 
     def getCurrentImage(self):                
-        return self.camera.capture(self.stream, format="bgr")
-        '''
-        #TODO fix this so we retrieve the latest image fron the stream, not the first one
-        data = np.fromstring(self.stream.getvalue(), dtype=np.uint8)
-        # "Decode" the image from the array, preserving colour
-        image = cv2.imdecode(data, 1)
-        # Change to RGB image
-        image = image[:, :, ::-1]
-            
-        qtImage = qimage2ndarray.array2qimage(image)
+        rawCapture = picamera.array.PiRGBArray(self.camera)
+        self.camera.capture(rawCapture, format="bgr")
+        return rawCapture.array
 
-        return QPixmap.fromImage(qtImage)
-        '''
+       
 
     def quit(self):
         super(self.__class__,self).quit()
@@ -180,7 +176,7 @@ class CameraStream(QThread):
 
     def run(self):
         print('qthread run!')
-        self.stream = io.BytesIO()
+        #self.stream = io.BytesIO()
         self.camera = picamera.PiCamera()
         #self.camera.capture(self.stream, format='bgr')
         self.camera.start_preview(fullscreen=False, window=(20,30,520,410))
