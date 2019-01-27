@@ -37,6 +37,9 @@
   <property name="windowTitle">
    <string>Laundry Manager and Optimizer</string>
   </property>
+  <property name="autoFillBackground">
+   <bool>false</bool>
+  </property>
   <widget class="QWidget" name="mainMenuWidget">
    <property name="sizePolicy">
     <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
