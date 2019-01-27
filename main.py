@@ -159,8 +159,7 @@ class CameraStream(QThread):
         print('qthread created!')
 
     def getCurrentImage(self):                
-        frame = self.camera.capture(self.stream, format="bgr")
-        return frame.array
+        return self.camera.capture(self.stream, format="bgr")
         '''
         #TODO fix this so we retrieve the latest image fron the stream, not the first one
         data = np.fromstring(self.stream.getvalue(), dtype=np.uint8)
