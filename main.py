@@ -41,7 +41,7 @@ class LaundrySymbols(Enum):
     TUMBLEDRY_OK = './img/tumbledry_ok.png'
     IRON_H = './img/iron_high.png'
     IRON_L = './img/iron_low.png'
-    IRON_M = './img/iron_high.png'
+    IRON_M = './img/iron_medium.png'
     WASH_30 = './img/wash_30c.png'
     WASH_40 = './img/wash_40c.png'
     WASH_50 = './img/wash_50c.png'
@@ -149,7 +149,8 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
             symbols.append(LaundrySymbols.IRON_M)
         elif(len(flag_BLEACH_NOCL) > 3 and len(flag_BLEACH_NOCL) < 18):
             symbols.append(LaundrySymbols.WASH_30)            
-            symbols.append(LaundrySymbols.BLEACH_NOCL)            
+            symbols.append(LaundrySymbols.BLEACH_NOCL) 
+            symbols.append(LaundrySymbols.IRON_L)           
         return symbols
 
     def onHomeButtonClick(self, mouseEvent):
