@@ -18,6 +18,7 @@ import mainmenu
 import scanmenu
 import confirmmenu
 import settingsmenu
+import washpopup
 
 PI_ACTIVE = True
 CHEESE_ACTIVE = False
@@ -30,7 +31,8 @@ except ModuleNotFoundError as e:
     PI_ACTIVE = False
 
 UI_INDEX={'MAIN_MENU': 0,'SCAN_MENU': 1,'CONFIRM_SCREEN': 2,
-    'SETTINGS_MENU': 3,'WASH_ITEMS_MENU': 4,'VIEW_EDIT_MENU': 5}
+    'SETTINGS_MENU': 3,'WASH_ITEMS_MENU': 5,'VIEW_EDIT_MENU': 6, 
+    'WASH_POPUP':4}
 
 class LaundrySymbols(Enum):
     OTHER_DARK = 0
@@ -52,12 +54,14 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
     def __init__(self):
         super(self.__class__, self).__init__()
         self.setupUi(self)
-
         self.stackedWidget = QStackedWidget()
+        self.washPopup = WashPopup(self.stackedWidget)
+
         self.stackedWidget.addWidget(self)
         self.stackedWidget.addWidget(ScanMenu(self.stackedWidget))
         self.stackedWidget.addWidget(ConfirmScreen(self.stackedWidget))
         self.stackedWidget.addWidget(SettingsMenu(self.stackedWidget))
+        self.stackedWidget.addWidget(self.washPopup)
         self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
         self.stackedWidget.show()
         
@@ -78,6 +82,8 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 
     def onWashClothesFrameClick(self, mouseEvent):
         print('wash clothes clicked')
+        self.stackedWidget.setCurrentIndex(UI_INDEX['WASH_POPUP'])
+        self.washPopup.setSection('BR')
 
     def onScanItemFrameClick(self, mouseEvent):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SCAN_MENU'])
@@ -145,9 +151,9 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['CONFIRM_SCREEN'])
 
     def getLaundrySymbolsFromImage(self, pixmapImage):
-        img1 = cv2.imread('template.jpg',0)          # queryImage - bleach nocl
+        img1 = cv2.imread('./img/template.jpg',0)          # queryImage - bleach nocl
         img2 = pixmapImage
-        img3 = cv2.imread('template2.jpg',0) #iron_medium
+        img3 = cv2.imread('./img/template2.jpg',0) #iron_medium
         sift = cv2.xfeatures2d.SIFT_create()
         kp1, des1 = sift.detectAndCompute(img1,None)
         kp2, des2 = sift.detectAndCompute(img2,None)
@@ -295,6 +301,32 @@ class SettingsMenu(QMainWindow, settingsmenu.Ui_SettingsMenu):
     def onHomeButtonClick(self, mouseEvent):
         self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 
+class WashPopup(QMainWindow, washpopup.Ui_WashPopup):
+    def __init__(self, stackedWidget):
+        super(self.__class__, self).__init__()
+        self.setupUi(self)
+        self.stackedWidget = stackedWidget
+        self.confirmWashBtn.mouseReleaseEvent = self.onConfirmButtonClick
+        self.cancelWashBtn.mouseReleaseEvent = self.onCancelButtonClick
+
+    def onConfirmButtonClick(self, mouseEvent):
+        self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
+
+    def onCancelButtonClick(self, mouseEvent):
+        self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
+
+    def setSection(self, section):
+        sectionGraphic = QPixmap()
+        if section == 'TR':
+            sectionGraphic = QPixmap('./img/wash_tr.png')
+        elif section == 'TL':
+            sectionGraphic = QPixmap('./img/wash_tl.png')
+        elif section == 'BL':
+            sectionGraphic = QPixmap('./img/wash_bl.png')
+        elif section == 'BR':
+            sectionGraphic = QPixmap('./img/wash_br.png')
+
+        self.hamperSectionView.setPixmap(sectionGraphic)
 
 
 if __name__ == '__main__':
