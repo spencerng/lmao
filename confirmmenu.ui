@@ -99,8 +99,8 @@
    <widget class="QPushButton" name="confirmScanBtn">
     <property name="geometry">
      <rect>
-      <x>220</x>
-      <y>400</y>
+      <x>230</x>
+      <y>390</y>
       <width>151</width>
       <height>51</height>
      </rect>
@@ -118,8 +118,8 @@
    <widget class="QPushButton" name="retryScanBtn">
     <property name="geometry">
      <rect>
-      <x>420</x>
-      <y>400</y>
+      <x>430</x>
+      <y>390</y>
       <width>131</width>
       <height>51</height>
      </rect>
@@ -137,7 +137,7 @@
    <widget class="QLabel" name="hamperSectionView">
     <property name="geometry">
      <rect>
-      <x>180</x>
+      <x>190</x>
       <y>160</y>
       <width>431</width>
       <height>201</height>

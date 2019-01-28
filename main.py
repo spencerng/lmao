@@ -20,6 +20,7 @@ import confirmmenu
 import settingsmenu
 
 PI_ACTIVE = True
+CHEESE_ACTIVE = False
 
 try:
     import picamera
@@ -71,6 +72,9 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 
     def onViewEditItemFrameClick(self, mouseEvent):
         print('view edit pressed')
+        global CHEESE_ACTIVE 
+        CHEESE_ACTIVE = not CHEESE_ACTIVE
+        
 
     def onWashClothesFrameClick(self, mouseEvent):
         print('wash clothes clicked')
@@ -90,8 +94,30 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         self.otherItemLightBtn.mouseReleaseEvent = self.onOtherItemLightButtonClick
         self.otherItemDarkBtn.mouseReleaseEvent = self.onOtherItemDarkButtonClick
         self.stackedWidget.currentChanged.connect(self.onMenuChange)
+        self.cheese30.mouseReleaseEvent = self.onCheese30Click
+        self.cheese40.mouseReleaseEvent = self.onCheese40Click
+
+    def onCheese30Click(self, mouseEvent):
+        if CHEESE_ACTIVE:
+            time.sleep(1.5)
+            self.switchToConfirmScreen([LaundrySymbols.WASH_30, LaundrySymbols.BLEACH_NOCL, LaundrySymbols.IRON_L])
+        else:
+            self.onScanItemButtonClick(mouseEvent)
+    def onCheese40Click(self, mouseEvent):
+        if CHEESE_ACTIVE:
+            time.sleep(1.5)
+            self.switchToConfirmScreen([LaundrySymbols.WASH_40, LaundrySymbols.BLEACH_NOCL, LaundrySymbols.IRON_M])
+        else:
+            self.onScanItemButtonClick(mouseEvent)
 
     def onMenuChange(self, newIndex):
+        if CHEESE_ACTIVE:
+            self.otherItemLightBtn.setText('Other Item: Light')
+            self.otherItemDarkBtn.setText('Other Item: Dark')
+        else:
+            self.otherItemLightBtn.setText('Other Item - Light')
+            self.otherItemDarkBtn.setText('Other Item - Dark')
+
         if newIndex == UI_INDEX['SCAN_MENU'] and PI_ACTIVE:
             print('going to create qthread!')
             self.camFeed = CameraStream(self, self.cameraFeedLabel)
