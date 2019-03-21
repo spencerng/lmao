@@ -12,7 +12,7 @@ import io
 import time
 import cv2
 import numpy as np
-import qimage2ndarray
+import time
 
 import mainmenu
 import scanmenu
@@ -23,10 +23,17 @@ import washpopup
 PI_ACTIVE = True
 CHEESE_ACTIVE = False
 
+TRIG_LEFT = 23
+ECHO_LEFT = 24
+
+TRIG_RIGHT = 17
+ECHO_RIGHT = 27
+
 try:
     import picamera
     import picamera.array
     import rpi_backlight as backlight
+    import ultrasonic
 except ModuleNotFoundError as e:
     PI_ACTIVE = False
 
@@ -333,5 +340,14 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     form = MainWindow()
     form.show()
+
+    if PI_ACTIVE:
+        left = ultrasonic.Ultrasonic(TRIG_LEFT, ECHO_LEFT)
+        right = ultrasonic.Ultrasonic(TRIG_RIGHT, ECHO_RIGHT)
+
+        while True:
+            print ("Measured Left Distance = %.1f cm" % left.distance())
+            print ("Measured Right Distance = %.1f cm" % right.distance())
+            time.sleep(1)
     
     sys.exit(app.exec_())
