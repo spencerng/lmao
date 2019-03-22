@@ -12,7 +12,6 @@ import io
 import time
 import cv2
 import numpy as np
-import time
 
 import mainmenu
 import scanmenu
@@ -28,6 +27,12 @@ ECHO_LEFT = 24
 
 TRIG_RIGHT = 17
 ECHO_RIGHT = 27
+
+# Ultrasonic distance settings [cm]
+TOP_MIN_DIST = 2.0
+TOP_MAX_DIST = 12.0
+BOTTOM_MIN_DIST = 14.0
+BOTTOM_MAX_DIST = 26.0
 
 try:
     import picamera
@@ -87,10 +92,13 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         CHEESE_ACTIVE = not CHEESE_ACTIVE
         
 
+    def showWashPopup(self, section):
+        self.stackedWidget.setCurrentIndex(UI_INDEX['WASH_POPUP'])
+        self.washPopup.setSection(section)
+
     def onWashClothesFrameClick(self, mouseEvent):
         print('wash clothes clicked')
-        self.stackedWidget.setCurrentIndex(UI_INDEX['WASH_POPUP'])
-        self.washPopup.setSection('BR')
+        self.showWashPopup('TL')
 
     def onScanItemFrameClick(self, mouseEvent):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SCAN_MENU'])
@@ -345,9 +353,26 @@ if __name__ == '__main__':
         left = ultrasonic.Ultrasonic(TRIG_LEFT, ECHO_LEFT)
         right = ultrasonic.Ultrasonic(TRIG_RIGHT, ECHO_RIGHT)
 
+        left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+        right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+        left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+        right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+
         while True:
-            print ("Measured Left Distance = %.1f cm" % left.distance())
-            print ("Measured Right Distance = %.1f cm" % right.distance())
-            time.sleep(1)
-    
+            time.sleep(ultrasonic.REFRESH_TIME)
+            
+            if form.stackedWidget.currentIndex() == UI_INDEX['MAIN_MENU']:
+                if left.getTopTimerReached():
+                    form.showWashPopup('TL')
+                    left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+                elif left.getBottomTimerReached():
+                    form.showWashPopup('BL')
+                    left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+                elif right.getTopTimerReached():
+                    form.showWashPopup('TR')
+                    right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+                elif right.getBottomTimerReached():
+                    form.showWashPopup('BR')
+                    right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+            
     sys.exit(app.exec_())
