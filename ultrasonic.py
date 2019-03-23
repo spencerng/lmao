@@ -3,8 +3,8 @@ import time
 from threading import Thread
  
 # Ultrasonic time settings [s]
-FULL_TIME_THRESH = 7.5
-REFRESH_TIME = 0.1
+FULL_TIME_THRESH = 7.5 # time until a section is detected as full
+REFRESH_TIME = 0.1 # frequency of polling the ultrasonic sensor
 
 GPIO.setmode(GPIO.BCM)
 
@@ -99,5 +99,4 @@ class Ultrasonic:
         
         # function of ultrasonic wave speed
         distance = (timeElapsed * 34300) / 2
-     
         return distance

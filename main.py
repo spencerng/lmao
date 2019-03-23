@@ -1,17 +1,12 @@
-import os
 from os import sys
 
-import PyQt5
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QObject, pyqtSignal, QThread, QPoint
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap
 from enum import Enum
-from matplotlib import pyplot as plt
 
-import io
 import time
 import cv2
-import numpy as np
 from threading import Thread
 
 import mainmenu
@@ -93,7 +88,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 
     def onViewEditItemFrameClick(self, mouseEvent):
         print('view edit pressed')
-        global CHEESE_ACTIVE 
+        global CHEESE_ACTIVE
         CHEESE_ACTIVE = not CHEESE_ACTIVE
         
 
@@ -192,17 +187,17 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
                 flag_IRONM.append([m])
         
         symbols = []
-        print("nocl: " + str(len(flag_BLEACH_NOCL)))        
-        print("ironm: " + str(len(flag_IRONM)))        
+        print("nocl: " + str(len(flag_BLEACH_NOCL)))
+        print("ironm: " + str(len(flag_IRONM)))   
 
         if (len(flag_IRONM) > 6):
-            symbols.append(LaundrySymbols.WASH_40)            
+            symbols.append(LaundrySymbols.WASH_40)          
             symbols.append(LaundrySymbols.BLEACH_NOCL)
             symbols.append(LaundrySymbols.IRON_M)
         elif(len(flag_BLEACH_NOCL) > 3 and len(flag_BLEACH_NOCL) < 18):
-            symbols.append(LaundrySymbols.WASH_30)            
-            symbols.append(LaundrySymbols.BLEACH_NOCL) 
-            symbols.append(LaundrySymbols.IRON_L)           
+            symbols.append(LaundrySymbols.WASH_30)
+            symbols.append(LaundrySymbols.BLEACH_NOCL)
+            symbols.append(LaundrySymbols.IRON_L)      
         return symbols
 
     def onHomeButtonClick(self, mouseEvent):
@@ -276,7 +271,7 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 
                 symbolHolder.move(QPoint(-totalWidth/2+100*i-5*(len(laundrySymbols)-1), -40) + self.detectedSymbolFrame.rect().center())
                 
-                symbolHolder.setFixedWidth(100) 
+                symbolHolder.setFixedWidth(100)
                 symbolGraphic = QPixmap(laundrySymbols[i].value)
                 symbolHolder.setPixmap(symbolGraphic.scaled(100,80,Qt.KeepAspectRatio))
 
@@ -392,4 +387,3 @@ if __name__ == '__main__':
         
             
     sys.exit(app.exec_())
-
