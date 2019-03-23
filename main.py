@@ -354,34 +354,40 @@ if __name__ == '__main__':
     form.show()
 
     if PI_ACTIVE:
-        left = Ultrasonic(TRIG_LEFT, ECHO_LEFT)
-        right = Ultrasonic(TRIG_RIGHT, ECHO_RIGHT)
-
-        left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
-        right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
-        left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
-        right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
-
-        while True:
-            time.sleep(REFRESH_TIME)
-            
-            if form.stackedWidget.currentIndex() == UI_INDEX['MAIN_MENU']:
-                if left.getTopTimerReached():
-                    form.showWashPopup('TL')
-                    
-                elif left.getBottomTimerReached():
-                    form.showWashPopup('BL')
-                    
-                elif right.getTopTimerReached():
-                    form.showWashPopup('TR')
-                    
-                elif right.getBottomTimerReached():
-                    form.showWashPopup('BR')
-                    
-            else:
-                left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
-                left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
-                right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
-                right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+        thread = Thread(target=detectFullHamper)
+        thread.start()
+        
             
     sys.exit(app.exec_())
+
+def detectFullHamper():
+    print('detecting full hamper')
+    left = Ultrasonic(TRIG_LEFT, ECHO_LEFT)
+    right = Ultrasonic(TRIG_RIGHT, ECHO_RIGHT)
+
+    left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+    right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+    left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+    right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+
+    while True:
+        time.sleep(REFRESH_TIME)
+        
+        if form.stackedWidget.currentIndex() == UI_INDEX['MAIN_MENU']:
+            if left.getTopTimerReached():
+                form.showWashPopup('TL')
+                
+            elif left.getBottomTimerReached():
+                form.showWashPopup('BL')
+                
+            elif right.getTopTimerReached():
+                form.showWashPopup('TR')
+                
+            elif right.getBottomTimerReached():
+                form.showWashPopup('BR')
+                
+        else:
+            left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+            left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+            right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+            right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
