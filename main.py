@@ -12,7 +12,6 @@ import io
 import time
 import cv2
 import numpy as np
-import time
 
 import mainmenu
 import scanmenu
@@ -29,11 +28,21 @@ ECHO_LEFT = 24
 TRIG_RIGHT = 17
 ECHO_RIGHT = 27
 
+# Ultrasonic distance settings [cm]
+# Adjusted for a 7" x 7" hamper, divided into 4 sections
+TOP_MIN_DIST = 0.1
+TOP_MAX_DIST = 16.5
+BOTTOM_MIN_DIST = 19.0
+BOTTOM_MAX_DIST = 35.0
+
+# How often to check if the hamper is full [s]
+REFRESH_TIME = 1.0
+
 try:
     import picamera
     import picamera.array
     import rpi_backlight as backlight
-    import ultrasonic
+    from ultrasonic import Ultrasonic
 except ModuleNotFoundError as e:
     PI_ACTIVE = False
 
@@ -87,10 +96,13 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         CHEESE_ACTIVE = not CHEESE_ACTIVE
         
 
+    def showWashPopup(self, section):
+        self.stackedWidget.setCurrentIndex(UI_INDEX['WASH_POPUP'])
+        self.washPopup.setSection(section)
+
     def onWashClothesFrameClick(self, mouseEvent):
         print('wash clothes clicked')
-        self.stackedWidget.setCurrentIndex(UI_INDEX['WASH_POPUP'])
-        self.washPopup.setSection('BR')
+        self.showWashPopup('TL')
 
     def onScanItemFrameClick(self, mouseEvent):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SCAN_MENU'])
@@ -342,12 +354,34 @@ if __name__ == '__main__':
     form.show()
 
     if PI_ACTIVE:
-        left = ultrasonic.Ultrasonic(TRIG_LEFT, ECHO_LEFT)
-        right = ultrasonic.Ultrasonic(TRIG_RIGHT, ECHO_RIGHT)
+        left = Ultrasonic(TRIG_LEFT, ECHO_LEFT)
+        right = Ultrasonic(TRIG_RIGHT, ECHO_RIGHT)
+
+        left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+        right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+        left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+        right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
 
         while True:
-            print ("Measured Left Distance = %.1f cm" % left.distance())
-            print ("Measured Right Distance = %.1f cm" % right.distance())
-            time.sleep(1)
-    
+            time.sleep(REFRESH_TIME)
+            
+            if form.stackedWidget.currentIndex() == UI_INDEX['MAIN_MENU']:
+                if left.getTopTimerReached():
+                    form.showWashPopup('TL')
+                    
+                elif left.getBottomTimerReached():
+                    form.showWashPopup('BL')
+                    
+                elif right.getTopTimerReached():
+                    form.showWashPopup('TR')
+                    
+                elif right.getBottomTimerReached():
+                    form.showWashPopup('BR')
+                    
+            else:
+                left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+                left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+                right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+                right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+            
     sys.exit(app.exec_())
