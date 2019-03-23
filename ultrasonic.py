@@ -3,7 +3,7 @@ import time
 from threading import Thread
  
 # Ultrasonic time settings [s]
-FULL_TIME_THRESH = 10.0
+FULL_TIME_THRESH = 7.5
 REFRESH_TIME = 0.1
 
 GPIO.setmode(GPIO.BCM)

@@ -12,6 +12,7 @@ import io
 import time
 import cv2
 import numpy as np
+from threading import Thread
 
 import mainmenu
 import scanmenu
@@ -347,19 +348,6 @@ class WashPopup(QMainWindow, washpopup.Ui_WashPopup):
 
         self.hamperSectionView.setPixmap(sectionGraphic)
 
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    form = MainWindow()
-    form.show()
-
-    if PI_ACTIVE:
-        thread = Thread(target=detectFullHamper)
-        thread.start()
-        
-            
-    sys.exit(app.exec_())
-
 def detectFullHamper():
     print('detecting full hamper')
     left = Ultrasonic(TRIG_LEFT, ECHO_LEFT)
@@ -391,3 +379,17 @@ def detectFullHamper():
             left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
             right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
             right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    form = MainWindow()
+    form.show()
+
+    if PI_ACTIVE:
+        thread = Thread(target=detectFullHamper)
+        thread.start()
+        
+            
+    sys.exit(app.exec_())
+
