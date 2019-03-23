@@ -29,16 +29,20 @@ TRIG_RIGHT = 17
 ECHO_RIGHT = 27
 
 # Ultrasonic distance settings [cm]
-TOP_MIN_DIST = 2.0
-TOP_MAX_DIST = 12.0
-BOTTOM_MIN_DIST = 14.0
-BOTTOM_MAX_DIST = 26.0
+# Adjusted for a 7" x 7" hamper, divided into 4 sections
+TOP_MIN_DIST = 0.1
+TOP_MAX_DIST = 16.5
+BOTTOM_MIN_DIST = 19.0
+BOTTOM_MAX_DIST = 35.0
+
+# How often to check if the hamper is full [s]
+REFRESH_TIME = 1.0
 
 try:
     import picamera
     import picamera.array
     import rpi_backlight as backlight
-    import ultrasonic
+    from ultrasonic import Ultrasonic
 except ModuleNotFoundError as e:
     PI_ACTIVE = False
 
@@ -350,8 +354,8 @@ if __name__ == '__main__':
     form.show()
 
     if PI_ACTIVE:
-        left = ultrasonic.Ultrasonic(TRIG_LEFT, ECHO_LEFT)
-        right = ultrasonic.Ultrasonic(TRIG_RIGHT, ECHO_RIGHT)
+        left = Ultrasonic(TRIG_LEFT, ECHO_LEFT)
+        right = Ultrasonic(TRIG_RIGHT, ECHO_RIGHT)
 
         left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
         right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
@@ -359,20 +363,25 @@ if __name__ == '__main__':
         right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
 
         while True:
-            time.sleep(ultrasonic.REFRESH_TIME)
+            time.sleep(REFRESH_TIME)
             
             if form.stackedWidget.currentIndex() == UI_INDEX['MAIN_MENU']:
                 if left.getTopTimerReached():
                     form.showWashPopup('TL')
-                    left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+                    
                 elif left.getBottomTimerReached():
                     form.showWashPopup('BL')
-                    left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+                    
                 elif right.getTopTimerReached():
                     form.showWashPopup('TR')
-                    right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+                    
                 elif right.getBottomTimerReached():
                     form.showWashPopup('BR')
-                    right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+                    
+            else:
+                left.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+                left.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
+                right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
+                right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
             
     sys.exit(app.exec_())
