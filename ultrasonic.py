@@ -1,14 +1,17 @@
-import RPi.GPIO as GPIO
+#!/usr/bin/python
 import time
 from threading import Thread
- 
+import RPi.GPIO as GPIO
+
 # Ultrasonic time settings [s]
-FULL_TIME_THRESH = 7.5 # time until a section is detected as full
-REFRESH_TIME = 0.1 # frequency of polling the ultrasonic sensor
+FULL_TIME_THRESH = 7.5  # time until a section is detected as full
+REFRESH_TIME = 0.1  # frequency of polling the ultrasonic sensor
 
 GPIO.setmode(GPIO.BCM)
 
+
 class Ultrasonic:
+
     def __init__(self, trigPin, echoPin):
         self.trigPin = trigPin
         self.echoPin = echoPin
@@ -17,7 +20,7 @@ class Ultrasonic:
         self.topTimeElapsed = 0.0
         self.bottomTimeElapsed = 0.0
         self.threads = []
-        self.terminate = {'topTimer':False, 'bottomTimer': False}
+        self.terminate = {'topTimer': False, 'bottomTimer': False}
 
     def timeTop(self):
         while True:
@@ -37,7 +40,7 @@ class Ultrasonic:
                 self.bottomTimeElapsed += REFRESH_TIME
             else:
                 self.bottomTimeElapsed = 0.0
-            
+
             time.sleep(REFRESH_TIME)
 
             if self.terminate['bottomTimer']:
@@ -58,7 +61,7 @@ class Ultrasonic:
 
         self.killThread('topTimer')
 
-        timer = Thread(target=self.timeTop, name="topTimer")
+        timer = Thread(target=self.timeTop, name='topTimer')
         self.threads.append(timer)
         timer.start()
 
@@ -69,7 +72,7 @@ class Ultrasonic:
 
         self.killThread('bottomTimer')
 
-        timer = Thread(target=self.timeBottom, name="bottomTimer")
+        timer = Thread(target=self.timeBottom, name='bottomTimer')
         self.threads.append(timer)
         timer.start()
 
@@ -81,22 +84,21 @@ class Ultrasonic:
 
     def distance(self):
         GPIO.output(self.trigPin, True)
- 
+
         time.sleep(0.00001)
         GPIO.output(self.trigPin, False)
- 
+
         startTime = time.time()
         stopTime = time.time()
-     
+
         while GPIO.input(self.echoPin) == 0:
             startTime = time.time()
-     
+
         while GPIO.input(self.echoPin) == 1:
             stopTime = time.time()
-     
-     
+
         timeElapsed = stopTime - startTime
-        
+
         # function of ultrasonic wave speed
-        distance = (timeElapsed * 34300) / 2
+        distance = timeElapsed * 34300 / 2
         return distance
