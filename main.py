@@ -23,7 +23,7 @@ try:
     import picamera.array
     import rpi_backlight as backlight
     from ultrasonic import Ultrasonic
-except ModuleNotFoundError, e:
+except ModuleNotFoundError as e:
     PI_ACTIVE = False
 
 TRIG_LEFT = 23
@@ -97,7 +97,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SETTINGS_MENU'])
 
     def onViewEditItemFrameClick(self, mouseEvent):
-        print 'view edit pressed'
+        print('view edit pressed')
         global CHEESE_ACTIVE
         CHEESE_ACTIVE = not CHEESE_ACTIVE
 
@@ -106,7 +106,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         self.washPopup.setSection(section)
 
     def onWashClothesFrameClick(self, mouseEvent):
-        print 'wash clothes clicked'
+        print('wash clothes clicked')
         self.showWashPopup('TL')
 
     def onScanItemFrameClick(self, mouseEvent):
@@ -155,7 +155,6 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
             self.otherItemDarkBtn.setText('Other Item - Dark')
 
         if newIndex == UI_INDEX['SCAN_MENU'] and PI_ACTIVE:
-            print 'going to create qthread!'
             self.camFeed = CameraStream(self, self.cameraFeedLabel)
             self.camFeed.start()
         elif self.camFeed is not None and PI_ACTIVE:
@@ -203,8 +202,8 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
                 flag_IRONM.append([m])
 
         symbols = []
-        print 'nocl: ' + str(len(flag_BLEACH_NOCL))
-        print 'ironm: ' + str(len(flag_IRONM))
+        print('nocl: ' + str(len(flag_BLEACH_NOCL)))
+        print('ironm: ' + str(len(flag_IRONM)))
 
         if len(flag_IRONM) > 6:
             symbols.append(LaundrySymbols.WASH_40)
@@ -225,7 +224,6 @@ class CameraStream(QThread):
     def __init__(self, parent, previewLabel):
         super(self.__class__, self).__init__()
         self.previewLabel = previewLabel
-        print 'qthread created!'
 
     def getCurrentImage(self):
         rawCapture = picamera.array.PiRGBArray(self.camera)
@@ -264,7 +262,7 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
         for symbol in self.detectedSymbolFrame.findChildren(QLabel):
             symbol.setParent(None)
 
-        print laundrySymbols
+        print(laundrySymbols)
 
         if len(laundrySymbols) == 0:
             self.itemDetectedLabel.setText('No symbols detected')
@@ -369,7 +367,7 @@ class WashPopup(QMainWindow, washpopup.Ui_WashPopup):
 
 
 def detectFullHamper():
-    print 'detecting full hamper'
+    print('detecting full hamper')
     left = Ultrasonic(TRIG_LEFT, ECHO_LEFT)
     right = Ultrasonic(TRIG_RIGHT, ECHO_RIGHT)
 
