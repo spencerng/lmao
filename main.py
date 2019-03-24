@@ -34,9 +34,9 @@ ECHO_RIGHT = 27
 
 # Ultrasonic distance settings [cm]
 # Adjusted for a 7" x 7" hamper, divided into 4 sections
-TOP_MIN_DIST = 0.1
+TOP_MIN_DIST = 0.0
 TOP_MAX_DIST = 16.5
-BOTTOM_MIN_DIST = 19.0
+BOTTOM_MIN_DIST = 17.0
 BOTTOM_MAX_DIST = 35.0
 
 # How often to check if the hamper is full [s]

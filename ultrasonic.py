@@ -4,8 +4,8 @@ from threading import Thread
 import RPi.GPIO as GPIO
 
 # Ultrasonic time settings [s]
-FULL_TIME_THRESH = 7.5  # time until a section is detected as full
-REFRESH_TIME = 0.1  # frequency of polling the ultrasonic sensor
+FULL_TIME_THRESH = 5.0  # time until a section is detected as full
+REFRESH_TIME = 0.5  # frequency of polling the ultrasonic sensor
 
 GPIO.setmode(GPIO.BCM)
 
