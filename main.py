@@ -13,11 +13,8 @@ import mainmenu
 import scanmenu
 import confirmmenu
 import settingsmenu
-<<<<<<< HEAD
 import vieweditmenu
-=======
 import washpopup
->>>>>>> e248a8a116c1ce49bfabea2c45df324820a5d4ed
 
 PI_ACTIVE = True
 CHEESE_ACTIVE = False
@@ -86,12 +83,9 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         self.stackedWidget.addWidget(ScanMenu(self.stackedWidget))
         self.stackedWidget.addWidget(ConfirmScreen(self.stackedWidget))
         self.stackedWidget.addWidget(SettingsMenu(self.stackedWidget))
-<<<<<<< HEAD
-        self.stackedWidget.addWidget(ViewEditMenu(self.stackedWidget))
-        self.stackedWidget.addWidget(ViewEditMenu(self.stackedWidget))
-=======
         self.stackedWidget.addWidget(self.washPopup)
->>>>>>> e248a8a116c1ce49bfabea2c45df324820a5d4ed
+        self.stackedWidget.addWidget(ViewEditMenu(self.stackedWidget))
+        self.stackedWidget.addWidget(ViewEditMenu(self.stackedWidget))
         self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
         self.stackedWidget.show()
 
