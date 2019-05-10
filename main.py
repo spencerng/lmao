@@ -18,6 +18,7 @@ import mainmenu
 import scanmenu
 import confirmmenu
 import settingsmenu
+import vieweditmenu
 
 PI_ACTIVE = True
 CHEESE_ACTIVE = False
@@ -58,6 +59,8 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         self.stackedWidget.addWidget(ScanMenu(self.stackedWidget))
         self.stackedWidget.addWidget(ConfirmScreen(self.stackedWidget))
         self.stackedWidget.addWidget(SettingsMenu(self.stackedWidget))
+        self.stackedWidget.addWidget(ViewEditMenu(self.stackedWidget))
+        self.stackedWidget.addWidget(ViewEditMenu(self.stackedWidget))
         self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
         self.stackedWidget.show()
         
@@ -71,6 +74,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SETTINGS_MENU'])
 
     def onViewEditItemFrameClick(self, mouseEvent):
+        self.stackedWidget.setCurrentIndex(UI_INDEX['VIEW_EDIT_MENU'])
         print('view edit pressed')
         global CHEESE_ACTIVE 
         CHEESE_ACTIVE = not CHEESE_ACTIVE
@@ -82,6 +86,16 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
     def onScanItemFrameClick(self, mouseEvent):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SCAN_MENU'])
 
+
+class ViewEditMenu(QMainWindow, vieweditmenu.Ui_ViewEditMenu):
+    def __init__(self, stackedWidget):
+        super(self.__class__, self).__init__()
+        self.setupUi(self)
+        self.stackedWidget = stackedWidget
+        self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
+
+    def onHomeButtonClick(self, mouseEvent):
+        self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 
 class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
     def __init__(self, stackedWidget):
