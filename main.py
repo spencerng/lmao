@@ -4,6 +4,7 @@ from enum import Enum
 from threading import Thread
 import time
 import cv2
+import jsonpickle
 
 from PyQt5.QtWidgets import *
 from PyQt5.QtCore import Qt, QObject, pyqtSignal, QThread, QPoint
@@ -18,6 +19,8 @@ import washpopup
 
 PI_ACTIVE = True
 CHEESE_ACTIVE = False
+DATA_FILENAME = 'clothes.dat'
+CURRENT_CLOTHES = {}
 
 try:
     import picamera
@@ -51,7 +54,9 @@ UI_INDEX = {
     'WASH_ITEMS_MENU': 5,
     'VIEW_EDIT_MENU': 6,
     'WASH_POPUP': 4,
-    }
+}
+
+
 
 
 class LaundrySymbols(Enum):
@@ -69,7 +74,6 @@ class LaundrySymbols(Enum):
     WASH_30 = './img/wash_30c.png'
     WASH_40 = './img/wash_40c.png'
     WASH_50 = './img/wash_50c.png'
-
 
 class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
 
@@ -104,6 +108,13 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         print('view edit pressed')
         global CHEESE_ACTIVE
         CHEESE_ACTIVE = not CHEESE_ACTIVE
+
+        #TODO - delete this once view/edit menu generation is done
+
+        for k,v in CURRENT_CLOTHES.items():
+            print(k)
+            for article in v:
+                print([symbol.value for symbol in article.symbols])
 
     def showWashPopup(self, section):
         self.stackedWidget.setCurrentIndex(UI_INDEX['WASH_POPUP'])
@@ -267,6 +278,9 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SCAN_MENU'])
 
     def onConfirmButtonClick(self, mouseEvent):
+        newArticle = ClothingArticle(self.laundrySymbols, self.section)
+        CURRENT_CLOTHES[self.section].append(newArticle)
+        ClothingArticle.serialize(CURRENT_CLOTHES, '.')
         self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 
     def setLaundrySymbols(self, laundrySymbols):
@@ -311,18 +325,41 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 
         sectionGraphic = QPixmap()
         if LaundrySymbols.OTHER_DARK in self.laundrySymbols:
+            self.section = 'TR'
             sectionGraphic = QPixmap('./img/place_tr.png')
         elif LaundrySymbols.OTHER_LIGHT in self.laundrySymbols:
-
+            self.section = 'TL'
             sectionGraphic = QPixmap('./img/place_tl.png')
         elif LaundrySymbols.WASH_30 in self.laundrySymbols:
-
+            self.section = 'BL'
             sectionGraphic = QPixmap('./img/place_bl.png')
         elif LaundrySymbols.WASH_40 in self.laundrySymbols:
-
+            self.section = 'BR'
             sectionGraphic = QPixmap('./img/place_br.png')
 
         self.hamperSectionView.setPixmap(sectionGraphic)
+
+class ClothingArticle():
+
+    def __init__(self, symbols, section):
+        self.symbols = symbols
+        self.section = section
+
+    def deserialize(filePath):
+        f = open(filePath + '/' + DATA_FILENAME, 'r')
+        return jsonpickle.decode(f.read())
+
+    def serialize(articleDict, filePath):
+        jsonData = jsonpickle.encode(articleDict)
+        f = open(filePath + '/' + DATA_FILENAME, 'w+')
+        f.write(jsonData)
+
+
+
+    def saveArticle(article, filePath):
+        articleArray = ClothingArticle.deserialize(filePath)
+        articleArray.append(article)
+        ClothingArticle.serialize(articleArray, filePath)
 
 
 class SettingsMenu(QMainWindow, settingsmenu.Ui_SettingsMenu):
@@ -408,14 +445,28 @@ def detectFullHamper():
             right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
             right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
 
-
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+
+    try:
+        CURRENT_CLOTHES = ClothingArticle.deserialize(".")
+    except FileNotFoundError as e:
+        print('creating new data file')
+        CURRENT_CLOTHES['TR'] = []
+        CURRENT_CLOTHES['TL'] = []
+        CURRENT_CLOTHES['BR'] = []
+        CURRENT_CLOTHES['BL'] = []
+        ClothingArticle.serialize(CURRENT_CLOTHES, '.')
+
     form = MainWindow()
     form.show()
+
+
 
     if PI_ACTIVE:
         thread = Thread(target=detectFullHamper)
         thread.start()
-        
+
     sys.exit(app.exec_())
+
+   
