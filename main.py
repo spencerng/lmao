@@ -39,9 +39,9 @@ ECHO_RIGHT = 27
 # Ultrasonic distance settings [cm]
 # Adjusted for a 7" x 7" hamper, divided into 4 sections
 TOP_MIN_DIST = 0.0
-TOP_MAX_DIST = 16.5
-BOTTOM_MIN_DIST = 17.0
-BOTTOM_MAX_DIST = 35.0
+TOP_MAX_DIST = 7.4
+BOTTOM_MIN_DIST = 7.5
+BOTTOM_MAX_DIST = 20.0
 
 # How often to check if the hamper is full [s]
 REFRESH_TIME = 1.0
@@ -429,7 +429,8 @@ def detectFullHamper():
 
     while True:
         time.sleep(REFRESH_TIME)
-
+        print('Left: ',left.distance())
+        print('Right: ',right.distance())
         if form.stackedWidget.currentIndex() == UI_INDEX['MAIN_MENU']:
             if left.getTopTimerReached():
                 form.showWashPopup('TL')
