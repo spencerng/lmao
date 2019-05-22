@@ -96,6 +96,12 @@
      <height>61</height>
     </rect>
    </property>
+   <property name="font">
+    <font>
+     <family>Roboto</family>
+     <pointsize>14</pointsize>
+    </font>
+   </property>
    <property name="text">
     <string/>
    </property>
@@ -103,6 +109,9 @@
     <pixmap>img/wash_30c.png</pixmap>
    </property>
    <property name="scaledContents">
+    <bool>true</bool>
+   </property>
+   <property name="wordWrap">
     <bool>true</bool>
    </property>
   </widget>

@@ -16,9 +16,11 @@ import confirmmenu
 import settingsmenu
 import vieweditmenu
 import washpopup
+import clothingeditwidget
+import washmenu
 
 PI_ACTIVE = True
-CHEESE_ACTIVE = False
+CHEESE_ACTIVE = True
 DATA_FILENAME = 'clothes.dat'
 CURRENT_CLOTHES = {}
 
@@ -71,6 +73,7 @@ class LaundrySymbols(Enum):
     IRON_H = './img/iron_high.png'
     IRON_L = './img/iron_low.png'
     IRON_M = './img/iron_medium.png'
+    IRON_NO = './img/iron_no.png'
     WASH_30 = './img/wash_30c.png'
     WASH_40 = './img/wash_40c.png'
     WASH_50 = './img/wash_50c.png'
@@ -88,7 +91,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         self.stackedWidget.addWidget(ConfirmScreen(self.stackedWidget))
         self.stackedWidget.addWidget(SettingsMenu(self.stackedWidget))
         self.stackedWidget.addWidget(self.washPopup)
-        self.stackedWidget.addWidget(ViewEditMenu(self.stackedWidget))
+        self.stackedWidget.addWidget(WashMenu(self.stackedWidget))
         self.stackedWidget.addWidget(ViewEditMenu(self.stackedWidget))
         self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
         self.stackedWidget.show()
@@ -99,35 +102,117 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
             self.onViewEditItemFrameClick
         self.washClothesFrame.mouseReleaseEvent = \
             self.onWashClothesFrameClick
+        
 
     def onSettingsFrameClick(self, mouseEvent):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SETTINGS_MENU'])
 
     def onViewEditItemFrameClick(self, mouseEvent):
+        self.stackedWidget.widget(UI_INDEX['VIEW_EDIT_MENU']).__init__(self.stackedWidget)
         self.stackedWidget.setCurrentIndex(UI_INDEX['VIEW_EDIT_MENU'])
-        print('view edit pressed')
         
-
-        #TODO - delete this once view/edit menu generation is done
-
-        for k,v in CURRENT_CLOTHES.items():
-            print(k)
-            for article in v:
-                print([symbol.value for symbol in article.symbols])
 
     def showWashPopup(self, section):
         self.stackedWidget.setCurrentIndex(UI_INDEX['WASH_POPUP'])
         self.washPopup.setSection(section)
 
     def onWashClothesFrameClick(self, mouseEvent):
-        print('wash clothes clicked')
-        self.showWashPopup('TL')
+        self.stackedWidget.setCurrentIndex(UI_INDEX['WASH_ITEMS_MENU'])
 
     def onScanItemFrameClick(self, mouseEvent):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SCAN_MENU'])
 
+class ViewClothingWidget(QWidget, clothingeditwidget.Ui_articleDisplayWidget):
+
+    def __init__(self, symbols, num):
+        super(self.__class__, self).__init__()
+        self.setupUi(self)
+        self.itemNumLabel.setText('Item #' + str(num+1))
+
+        self.deleteButton.mouseReleaseEvent = self.onDeleteButtonClick
+
+        self.symbols = symbols
+        if LaundrySymbols.OTHER_DARK in symbols:
+            self.washLabel.setText('Other item - dark')
+        elif LaundrySymbols.OTHER_LIGHT in symbols:
+            self.washLabel.setText('Other item - light')
+        elif LaundrySymbols.WASH_30 in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.WASH_30.value)
+            self.washLabel.setPixmap(symbolGraphic)
+        elif LaundrySymbols.WASH_40 in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.WASH_40.value)
+            self.washLabel.setPixmap(symbolGraphic)
+        else:
+            self.washLabel.setText(' ')
+
+        if LaundrySymbols.BLEACH_NO in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.BLEACH_NO.value)
+            self.bleachLabel.setPixmap(symbolGraphic)
+        elif LaundrySymbols.BLEACH_NOCL in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.BLEACH_NOCL.value)
+            self.bleachLabel.setPixmap(symbolGraphic)
+        else:
+            self.bleachLabel.setText(' ')
+
+
+        if LaundrySymbols.IRON_L in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.IRON_L.value)
+            self.ironLabel.setPixmap(symbolGraphic)
+        elif LaundrySymbols.IRON_M in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.IRON_M.value)
+            self.ironLabel.setPixmap(symbolGraphic)
+        elif LaundrySymbols.IRON_H in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.IRON_H.value)
+            self.ironLabel.setPixmap(symbolGraphic)
+        elif LaundrySymbols.IRON_NO in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.IRON_NO.value)
+            self.ironLabel.setPixmap(symbolGraphic)
+        else:
+            self.ironLabel.setText(' ')
+
+        if LaundrySymbols.TUMBLEDRY_L in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.TUMBLEDRY_L.value)
+            self.dryLabel.setPixmap(symbolGraphic)
+        elif LaundrySymbols.TUMBLEDRY_OK in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.TUMBLEDRY_OK.value)
+            self.dryLabel.setPixmap(symbolGraphic)
+        elif LaundrySymbols.TUMBLEDRY_H in symbols:
+            symbolGraphic = QPixmap(LaundrySymbols.TUMBLEDRY_H.value)
+            self.dryLabel.setPixmap(symbolGraphic)
+        else:
+            self.dryLabel.setText(' ')
+
+    def onDeleteButtonClick(self, mouseEvent):
+        self.setVisible(False)
+        for k,v in CURRENT_CLOTHES.items():
+            for article in v:
+                if article.symbols == self.symbols:
+                    v.remove(article)
+                    return
+
+
 
 class ViewEditMenu(QMainWindow, vieweditmenu.Ui_ViewEditMenu):
+    def __init__(self, stackedWidget):
+        super(self.__class__, self).__init__()
+        self.setupUi(self)
+        self.stackedWidget = stackedWidget
+        self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
+        self.generateGUI()
+    def onHomeButtonClick(self, mouseEvent):
+        self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
+
+    def generateGUI(self):
+        for i in range(len(CURRENT_CLOTHES['BL'])):
+            self.scrollBlLayout.addWidget(ViewClothingWidget(CURRENT_CLOTHES['BL'][i].symbols, i))
+        for i in range(len(CURRENT_CLOTHES['BR'])):
+            self.scrollBrLayout.addWidget(ViewClothingWidget(CURRENT_CLOTHES['BR'][i].symbols, i))
+        for i in range(len(CURRENT_CLOTHES['TR'])):
+            self.scrollTrLayout.addWidget(ViewClothingWidget(CURRENT_CLOTHES['TR'][i].symbols, i))
+        for i in range(len(CURRENT_CLOTHES['TL'])):
+            self.scrollTlLayout.addWidget(ViewClothingWidget(CURRENT_CLOTHES['TL'][i].symbols, i))
+
+class WashMenu(QMainWindow, washmenu.Ui_SettingsMenu):
     def __init__(self, stackedWidget):
         super(self.__class__, self).__init__()
         self.setupUi(self)
@@ -158,7 +243,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         if CHEESE_ACTIVE:
             time.sleep(2.75)
             self.switchToConfirmScreen([LaundrySymbols.WASH_30,
-                    LaundrySymbols.BLEACH_NOCL, LaundrySymbols.IRON_L])
+                    LaundrySymbols.BLEACH_NOCL, LaundrySymbols.TUMBLEDRY_L, LaundrySymbols.IRON_L])
         else:
             self.onScanItemButtonClick(mouseEvent)
 
@@ -166,7 +251,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
         if CHEESE_ACTIVE:
             time.sleep(2.3333)
             self.switchToConfirmScreen([LaundrySymbols.WASH_40,
-                    LaundrySymbols.BLEACH_NOCL, LaundrySymbols.IRON_M])
+                    LaundrySymbols.BLEACH_NO, LaundrySymbols.TUMBLEDRY_L, LaundrySymbols.IRON_M])
         else:
             self.onScanItemButtonClick(mouseEvent)
 
@@ -233,10 +318,12 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
             symbols.append(LaundrySymbols.WASH_40)
             symbols.append(LaundrySymbols.BLEACH_NOCL)
             symbols.append(LaundrySymbols.IRON_M)
+            symbols.append(LaundrySymbols.TUMBLEDRY_L)
         elif len(flag_BLEACH_NOCL) > 3 and len(flag_BLEACH_NOCL) < 18:
             symbols.append(LaundrySymbols.WASH_30)
             symbols.append(LaundrySymbols.BLEACH_NOCL)
             symbols.append(LaundrySymbols.IRON_L)
+            symbols.append(LaundrySymbols.TUMBLEDRY_L)
         return symbols
 
     def onHomeButtonClick(self, mouseEvent):
@@ -278,6 +365,7 @@ class ConfirmScreen(QMainWindow, confirmmenu.Ui_ConfirmMenu):
 
     def onConfirmButtonClick(self, mouseEvent):
         newArticle = ClothingArticle(self.laundrySymbols, self.section)
+        global CURRENT_CLOTHES
         CURRENT_CLOTHES[self.section].append(newArticle)
         ClothingArticle.serialize(CURRENT_CLOTHES, '.')
         self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
@@ -370,16 +458,18 @@ class SettingsMenu(QMainWindow, settingsmenu.Ui_SettingsMenu):
         self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
         self.brightnessSlider.mouseReleaseEvent = self.onBrightnessSliderChange
         self.accurateScanButton.toggled.connect(self.onScanMethodToggle)
+        self.deleteAllButton.mouseReleaseEvent = self.onDeleteButtonClick
         if PI_ACTIVE:
             self.brightnessSlider.setValue(backlight.get_actual_brightness())
             self.brightnessLvlLabel.setText('Current level: '
                     + str(int(backlight.get_actual_brightness() * 100
                     / 255)))
 
+    def onDeleteButtonClick(self, mouseEvent):
+        resetData()
     def onScanMethodToggle(self):
         global CHEESE_ACTIVE
         CHEESE_ACTIVE = not self.accurateScanButton.isChecked()
-        print(CHEESE_ACTIVE)
 
     def onBrightnessSliderChange(self, mouseEvent):
         brightness = int(100 * self.brightnessSlider.value() / 255)
@@ -451,18 +541,21 @@ def detectFullHamper():
             right.setupTopTimer(TOP_MIN_DIST, TOP_MAX_DIST)
             right.setupBottomTimer(BOTTOM_MIN_DIST, BOTTOM_MAX_DIST)
 
+def resetData():
+    print('creating new data file')
+    CURRENT_CLOTHES['TR'] = [ClothingArticle([LaundrySymbols.OTHER_DARK], 'TR')]
+    CURRENT_CLOTHES['TL'] = [ClothingArticle([LaundrySymbols.OTHER_LIGHT], 'TL'), ClothingArticle([LaundrySymbols.OTHER_LIGHT], 'TL')]
+    CURRENT_CLOTHES['BR'] = [ClothingArticle([LaundrySymbols.WASH_40, LaundrySymbols.BLEACH_NOCL, LaundrySymbols.TUMBLEDRY_L, LaundrySymbols.IRON_M], 'BR'), ClothingArticle([LaundrySymbols.WASH_40, LaundrySymbols.BLEACH_NOCL, LaundrySymbols.TUMBLEDRY_H, LaundrySymbols.IRON_NO], 'BL'), ClothingArticle([LaundrySymbols.WASH_40, LaundrySymbols.BLEACH_NO, LaundrySymbols.TUMBLEDRY_L, LaundrySymbols.IRON_NO], 'BL')]
+    CURRENT_CLOTHES['BL'] = [ClothingArticle([LaundrySymbols.WASH_30, LaundrySymbols.BLEACH_NOCL, LaundrySymbols.TUMBLEDRY_L, LaundrySymbols.IRON_NO], 'BL'),ClothingArticle([LaundrySymbols.WASH_30, LaundrySymbols.BLEACH_NOCL, LaundrySymbols.TUMBLEDRY_L], 'BL')]
+    ClothingArticle.serialize(CURRENT_CLOTHES, '.')
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
 
     try:
         CURRENT_CLOTHES = ClothingArticle.deserialize(".")
     except FileNotFoundError as e:
-        print('creating new data file')
-        CURRENT_CLOTHES['TR'] = []
-        CURRENT_CLOTHES['TL'] = []
-        CURRENT_CLOTHES['BR'] = []
-        CURRENT_CLOTHES['BL'] = []
-        ClothingArticle.serialize(CURRENT_CLOTHES, '.')
+        resetData()
 
     form = MainWindow()
     form.show()

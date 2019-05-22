@@ -59,10 +59,10 @@
    <widget class="QLabel" name="homeButton">
     <property name="geometry">
      <rect>
-      <x>660</x>
-      <y>320</y>
-      <width>131</width>
-      <height>131</height>
+      <x>680</x>
+      <y>370</y>
+      <width>111</width>
+      <height>111</height>
      </rect>
     </property>
     <property name="text">
@@ -96,7 +96,7 @@
      <enum>QTabWidget::North</enum>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>3</number>
     </property>
     <property name="usesScrollButtons">
      <bool>false</bool>
@@ -126,6 +126,17 @@
          <height>429</height>
         </rect>
        </property>
+       <widget class="QWidget" name="verticalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>10</y>
+          <width>791</width>
+          <height>441</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="scrollBlLayout"/>
+       </widget>
       </widget>
      </widget>
     </widget>
@@ -154,6 +165,17 @@
          <height>429</height>
         </rect>
        </property>
+       <widget class="QWidget" name="verticalLayoutWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>791</width>
+          <height>451</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="scrollBrLayout"/>
+       </widget>
       </widget>
      </widget>
     </widget>
@@ -182,6 +204,19 @@
          <height>429</height>
         </rect>
        </property>
+       <widget class="QWidget" name="verticalLayoutWidget_3">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>-1</y>
+          <width>801</width>
+          <height>451</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="scrollTlLayout"/>
+       </widget>
+       <zorder>verticalLayoutWidget_3</zorder>
+       <zorder>verticalLayoutWidget_3</zorder>
       </widget>
      </widget>
     </widget>
@@ -210,6 +245,17 @@
          <height>429</height>
         </rect>
        </property>
+       <widget class="QWidget" name="verticalLayoutWidget_4">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>-1</y>
+          <width>801</width>
+          <height>451</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="scrollTrLayout"/>
+       </widget>
       </widget>
      </widget>
     </widget>
