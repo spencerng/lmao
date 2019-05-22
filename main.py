@@ -108,7 +108,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['SETTINGS_MENU'])
 
     def onViewEditItemFrameClick(self, mouseEvent):
-        self.stackedWidget.widget(UI_INDEX['VIEW_EDIT_MENU']).__init__(self.stackedWidget)
+        self.stackedWidget.widget(UI_INDEX['VIEW_EDIT_MENU']).generateGUI()
         self.stackedWidget.setCurrentIndex(UI_INDEX['VIEW_EDIT_MENU'])
         
 
@@ -203,6 +203,10 @@ class ViewEditMenu(QMainWindow, vieweditmenu.Ui_ViewEditMenu):
         self.stackedWidget.setCurrentIndex(UI_INDEX['MAIN_MENU'])
 
     def generateGUI(self):
+        for layout in [self.scrollBlLayout, self.scrollBrLayout, self.scrollTrLayout, self.scrollTlLayout]:
+            for i in reversed(range(layout.count())): 
+                layout.itemAt(i).widget().setParent(None)
+
         for i in range(len(CURRENT_CLOTHES['BL'])):
             self.scrollBlLayout.addWidget(ViewClothingWidget(CURRENT_CLOTHES['BL'][i].symbols, i))
         for i in range(len(CURRENT_CLOTHES['BR'])):
