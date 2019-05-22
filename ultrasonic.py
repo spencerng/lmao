@@ -36,7 +36,7 @@ class Ultrasonic:
 
     def timeBottom(self):
         while True:
-            if self.minBottomDist <= self.distance() <= self.maxBottomDist:
+            if self.minBottomDist <= self.distance() <= self.maxBottomDist or 1000 <= self.distance() <= 5000:
                 self.bottomTimeElapsed += REFRESH_TIME
             else:
                 self.bottomTimeElapsed = 0.0
