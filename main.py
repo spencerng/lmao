@@ -106,8 +106,7 @@ class MainWindow(QMainWindow, mainmenu.Ui_MainMenu):
     def onViewEditItemFrameClick(self, mouseEvent):
         self.stackedWidget.setCurrentIndex(UI_INDEX['VIEW_EDIT_MENU'])
         print('view edit pressed')
-        global CHEESE_ACTIVE
-        CHEESE_ACTIVE = not CHEESE_ACTIVE
+        
 
         #TODO - delete this once view/edit menu generation is done
 
@@ -157,7 +156,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 
     def onCheese30Click(self, mouseEvent):
         if CHEESE_ACTIVE:
-            time.sleep(1.5)
+            time.sleep(2.75)
             self.switchToConfirmScreen([LaundrySymbols.WASH_30,
                     LaundrySymbols.BLEACH_NOCL, LaundrySymbols.IRON_L])
         else:
@@ -165,7 +164,7 @@ class ScanMenu(QMainWindow, scanmenu.Ui_ScanMenu):
 
     def onCheese40Click(self, mouseEvent):
         if CHEESE_ACTIVE:
-            time.sleep(1.5)
+            time.sleep(2.3333)
             self.switchToConfirmScreen([LaundrySymbols.WASH_40,
                     LaundrySymbols.BLEACH_NOCL, LaundrySymbols.IRON_M])
         else:
@@ -370,11 +369,17 @@ class SettingsMenu(QMainWindow, settingsmenu.Ui_SettingsMenu):
         self.stackedWidget = stackedWidget
         self.homeButton.mouseReleaseEvent = self.onHomeButtonClick
         self.brightnessSlider.mouseReleaseEvent = self.onBrightnessSliderChange
+        self.accurateScanButton.toggled.connect(self.onScanMethodToggle)
         if PI_ACTIVE:
             self.brightnessSlider.setValue(backlight.get_actual_brightness())
             self.brightnessLvlLabel.setText('Current level: '
                     + str(int(backlight.get_actual_brightness() * 100
                     / 255)))
+
+    def onScanMethodToggle(self):
+        global CHEESE_ACTIVE
+        CHEESE_ACTIVE = not self.accurateScanButton.isChecked()
+        print(CHEESE_ACTIVE)
 
     def onBrightnessSliderChange(self, mouseEvent):
         brightness = int(100 * self.brightnessSlider.value() / 255)
