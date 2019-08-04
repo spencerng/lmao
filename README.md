@@ -4,7 +4,7 @@ The Laundry Manager and Optimizer was envisioned as an Internet of Things hamper
 
 Built by [Spencer Ng](https://github.com/spencerng) and [Kevin Tang](https://github.com/icevin) for their senior capstone project at the Middlesex County Academy for Science, Mathematics, and Engineering Technologies. [The project's prototype](https://devpost.com/software/load-optimization-assistance-device) was a Top 30 Hack winner at PennApps XVIII.
 
-[Prototype image](./assets/prototype.jpg)
+<img src="https://github.com/spencerng/lmao/raw/master/assets/prototype.jpg" width="300">
 
 ### Project specifications
 
